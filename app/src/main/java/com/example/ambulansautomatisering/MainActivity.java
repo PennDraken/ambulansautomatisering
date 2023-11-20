@@ -32,19 +32,17 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
 
+
     private double[] hospital_pos = {1.0, 1.0};             // läs in från terminal????
 
+    // patient pos == null island 10
     private double[] patient_position = {6.8155, -5.2549};  // läs in från terminal????
 
 
     protected Boolean checkPosition(double[] current_pos, double[] goal_pos){
         return (current_pos[0] == goal_pos[0]) && (current_pos[1] == goal_pos[1]);
     }
-
-    protected double roundCoordinate(){
-        return 2.0;
-    }
-
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,17 +83,19 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         double[] current = {Math.round(latitude*10000)/10000, Math.round(longitude*10000)/10000};
 
         double[] target = {Math.round(patient_position[0]*10000)/10000, Math.round(patient_position[1]*10000)/10000};
+
         if(checkPosition(current, target)){
+            // Update the TextView with the new location
             String locationText = "GOOOOOOOOOOL";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
-        // Update the TextView with the new location
-        /*
-        String locationText = "Latitude: " + latitude + "\nLongitude: " + longitude;
-        TextView locationTextView = findViewById(R.id.locationTextView);
-        locationTextView.setText(locationText);
 
-         */
+        else {
+            // Update the TextView with the new location
+            String locationText = "On the way to patient";
+            TextView locationTextView = findViewById(R.id.locationTextView);
+            locationTextView.setText(locationText);
+        }
     }
 }
