@@ -1,7 +1,12 @@
 package com.example.ambulansautomatisering;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -28,10 +33,14 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener {
+
+public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
 
+    private SensorManager sensorManager;
+    private Sensor accelerometerSensor;
+    private TextView yTextView;
 
     private double[] hospital_pos = {1.0, 1.0};             // läs in från terminal????
 
@@ -42,14 +51,34 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected Boolean checkPosition(double[] current_pos, double[] goal_pos){
         return (current_pos[0] == goal_pos[0]) && (current_pos[1] == goal_pos[1]);
     }
-    
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        locationHelper = new LocationHelper(this, this);
 
+        yTextView = findViewById(R.id.yTextView);
+
+        locationHelper = new LocationHelper(this, this);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        if (sensorManager != null) {
+            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permissions
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        } else {
+            // Permission already granted, proceed with getting location and starting accelerometer updates
+            locationHelper.startLocationUpdates();
+            if (accelerometerSensor != null) {
+                sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            }
+        }
+        /*
         // Check for permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Request permissions
@@ -58,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Permission already granted, proceed with getting location
             locationHelper.startLocationUpdates();
         }
+
+         */
     }
 
     @Override
@@ -65,6 +96,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onResume() {
         super.onResume();
         locationHelper.startLocationUpdates();
+
+        if (accelerometerSensor != null) {
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @Override
@@ -72,6 +107,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onPause() {
         super.onPause();
         locationHelper.stopLocationUpdates();
+
+        if (accelerometerSensor != null) {
+            sensorManager.unregisterListener(this);
+        }
     }
 
     @Override
@@ -97,5 +136,21 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float y = event.values[1];
+
+            // Update TextViews or perform other actions with accelerometer data
+            yTextView.setText("Y: " + y);
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+        // syntaxerror if not added
     }
 }

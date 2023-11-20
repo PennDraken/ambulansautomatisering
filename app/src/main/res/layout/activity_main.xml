@@ -13,17 +13,30 @@
         android:text="Location not available"
         android:textSize="18sp" />
 
+    <TextView
+        android:id="@+id/yTextView"
+        android:layout_width="171dp"
+        android:layout_height="160dp"
+        android:layout_above="@+id/locationTextView"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="123dp"
+        android:layout_marginEnd="117dp"
+        android:layout_marginBottom="157dp"
+        android:text="Y: "
+        android:textSize="23sp" />
+
     <Button
         android:id="@+id/button"
-        android:layout_width="111dp"
-        android:layout_height="60dp"
+        android:layout_width="198dp"
+        android:layout_height="103dp"
         android:layout_above="@+id/locationTextView"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="596dp"
-        android:layout_marginEnd="149dp"
-        android:layout_marginBottom="-298dp"
+        android:layout_marginStart="107dp"
+        android:layout_marginTop="595dp"
+        android:layout_marginEnd="106dp"
+        android:layout_marginBottom="-336dp"
         android:text="Notera tid" />
 </RelativeLayout>
