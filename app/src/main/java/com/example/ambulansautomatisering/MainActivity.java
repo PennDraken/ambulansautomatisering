@@ -15,17 +15,28 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-public class MainActivity extends AppCompatActivity {
+import android.location.Location;
+import android.os.Bundle;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.location.LocationServices;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private FusedLocationProviderClient fusedLocationClient;
+    private LocationHelper locationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        locationHelper = new LocationHelper(this, this);
 
         // Check for permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -33,39 +44,33 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
             // Permission already granted, proceed with getting location
-            getLocation();
+            locationHelper.startLocationUpdates();
         }
-    }
-
-    private void getLocation() {
-        // Create a location request
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        // Set up location callback
-        LocationCallback locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult != null) {
-                    Location location = locationResult.getLastLocation();
-                    // Do something with the location, e.g., update UI
-                }
-            }
-        };
-
-        // Request location updates
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, proceed with getting location
-                getLocation();
-            } else {
-                // Permission denied, handle accordingly (e.g., show a message or disable location features)
-            }
-        }
+    // This is when activity is reopened
+    protected void onResume() {
+        super.onResume();
+        locationHelper.startLocationUpdates();
+    }
+
+    @Override
+    // This is when activity loses focus
+    protected void onPause() {
+        super.onPause();
+        locationHelper.stopLocationUpdates();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        // Handle the updated location here
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+
+        // Update the TextView with the new location
+        String locationText = "Latitude: " + latitude + "\nLongitude: " + longitude;
+        TextView locationTextView = findViewById(R.id.locationTextView);
+        locationTextView.setText(locationText);
     }
 }
