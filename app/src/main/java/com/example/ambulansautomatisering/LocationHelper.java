@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationResult;
 
 public class LocationHelper {
 
+    // From google play services
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private LocationListener locationListener;
