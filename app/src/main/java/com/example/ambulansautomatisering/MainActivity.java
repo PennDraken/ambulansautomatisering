@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
         } else {
             // Permission already granted, proceed with getting location
-
             locationHelper.startLocationUpdates();
         }
     }
