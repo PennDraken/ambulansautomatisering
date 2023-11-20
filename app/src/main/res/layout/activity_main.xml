@@ -12,4 +12,18 @@
         android:layout_centerInParent="true"
         android:text="Location not available"
         android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="111dp"
+        android:layout_height="60dp"
+        android:layout_above="@+id/locationTextView"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="596dp"
+        android:layout_marginEnd="149dp"
+        android:layout_marginBottom="-298dp"
+        android:text="Notera tid" />
 </RelativeLayout>
