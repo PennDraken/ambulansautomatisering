@@ -39,12 +39,14 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     }
 
     @Override
+    // This is when activity is reopened
     protected void onResume() {
         super.onResume();
         locationHelper.startLocationUpdates();
     }
 
     @Override
+    // This is when activity loses focus
     protected void onPause() {
         super.onPause();
         locationHelper.stopLocationUpdates();
