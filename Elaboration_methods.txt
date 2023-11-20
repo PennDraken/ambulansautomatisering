@@ -56,7 +56,16 @@ LocationHelper.java
 6. stopLocationUpdates Method:
     -Stops location updates by removing the callback.
 
-    
+
+Elaboration on the member variables:
+    -fusedLocationProviderClient interacts with the Google Play services API to request and manage location updates.
+
+    -locationCallback specifies what should happen when a new location is available.
+    It processes the location result and notifies the registered LocationListener.
+
+    -locationListener provides a mechanism for the calling class (MainActivity) to receive and handle location updates.
+    It acts as a callback interface, allowing the LocationHelper to communicate with the calling class without direct dependencies.
+
 This code essentially sets up a location-aware Android app.
 It checks for location permissions, starts location updates when granted, and updates a TextView with the current location.
 The LocationHelper class abstracts away the details of location updates.
