@@ -42,14 +42,18 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Sensor accelerometerSensor;
     private TextView yTextView;
 
-    private double[] hospital_pos = {1.0, 1.0};             // läs in från terminal????
-
+    private Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
     // patient pos == null island 10
-    private double[] patient_position = {6.8155, -5.2549};  // läs in från terminal????
+    //private double[] patient_position = {6.8155, -5.2549};  // läs in från terminal????
 
+    private Tuple patient_position = new Tuple(6.8155, -5.2549);
 
-    protected Boolean checkPosition(double[] current_pos, double[] goal_pos){
-        return (current_pos[0] == goal_pos[0]) && (current_pos[1] == goal_pos[1]);
+    private boolean isLocationOutsideThreshold(Tuple current,
+                                               Tuple target, float threshold) {
+        float[] results = new float[1];
+        Location.distanceBetween(current.getLatitude(), current.getLongitude(), target.getLatitude(), target.getLongitude(), results);
+        float distanceInMeters = results[0];
+        return distanceInMeters > threshold;
     }
 
 
@@ -119,20 +123,23 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        double[] current = {Math.round(latitude*10000)/10000, Math.round(longitude*10000)/10000};
+        Tuple current = new Tuple(latitude, longitude);
 
-        double[] target = {Math.round(patient_position[0]*10000)/10000, Math.round(patient_position[1]*10000)/10000};
+        Tuple patient = new Tuple(patient_position.getLatitude(), patient_position.getLongitude());
 
-        if(checkPosition(current, target)){
+        // Location outside 500m? then we've left hospital
+        if(isLocationOutsideThreshold(current, hospital_pos, 500)){
+            // lägg till tidsnotering1 i lista?
+
             // Update the TextView with the new location
-            String locationText = "GOOOOOOOOOOL";
+            String locationText = "Left hospital";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
 
         else {
             // Update the TextView with the new location
-            String locationText = "On the way to patient";
+            String locationText = "Still on hospital";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
