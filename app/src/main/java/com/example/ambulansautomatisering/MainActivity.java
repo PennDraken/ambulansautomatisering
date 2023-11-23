@@ -1,6 +1,7 @@
 package com.example.ambulansautomatisering;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -37,16 +38,18 @@ import androidx.core.content.ContextCompat;
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
-
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
-    private TextView yTextView;
 
-    private Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
+    private TextView accTextView;
+
+
+    private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
+    private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
     // patient pos == null island 10
-    //private double[] patient_position = {6.8155, -5.2549};  // läs in från terminal????
+    //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private Tuple patient_position = new Tuple(6.8155, -5.2549);
+    private final Tuple patient_position = new Tuple(6.8155, -5.2549);
 
     private boolean isLocationOutsideThreshold(Tuple current,
                                                Tuple target, float threshold) {
@@ -62,8 +65,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        yTextView = findViewById(R.id.yTextView);
-
+        accTextView = findViewById(R.id.accTextView);;
         locationHelper = new LocationHelper(this, this);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -82,17 +84,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
             }
         }
-        /*
-        // Check for permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Request permissions
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-        } else {
-            // Permission already granted, proceed with getting location
-            locationHelper.startLocationUpdates();
-        }
-
-         */
     }
 
     @Override
@@ -127,32 +118,49 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         Tuple patient = new Tuple(patient_position.getLatitude(), patient_position.getLongitude());
 
-        // Location outside 500m? then we've left hospital
-        if(isLocationOutsideThreshold(current, hospital_pos, 500)){
-            // lägg till tidsnotering1 i lista?
+        // Location outside 100m? then we've left hospital
+        if(isLocationOutsideThreshold(current, ambulance_station, 100)){
+            // lägg till tidsnotering_n i lista?
 
             // Update the TextView with the new location
-            String locationText = "Left hospital";
+            String locationText = "Left station";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
 
+        if(!isLocationOutsideThreshold(current, hospital_pos, 100) /*Also check if this is the correct time stamp*/ ){
+            // lägg till tidsnotering_n i lista?
+
+            // Update the TextView with the new location
+            String locationText = "Arrived at hospital";
+            TextView locationTextView = findViewById(R.id.locationTextView);
+            locationTextView.setText(locationText);
+        }
+
+        /*
         else {
             // Update the TextView with the new location
-            String locationText = "Still on hospital";
+            String locationText = "Idling";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+
+         */
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = event.values[0];
             float y = event.values[1];
+            float z = event.values[2];
+
+
+            double total_acc = Math.sqrt(x*x+y*y+z*z);
 
             // Update TextViews or perform other actions with accelerometer data
-            yTextView.setText("Y: " + y);
 
+            accTextView.setText("Acceleration: " + total_acc);
         }
     }
 
