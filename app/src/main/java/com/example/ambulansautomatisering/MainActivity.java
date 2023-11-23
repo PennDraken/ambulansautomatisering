@@ -46,16 +46,16 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private TextView accTextView;
 
 
-    private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
-    private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
+    private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
+    private final Coordinate hospital_pos = new Coordinate(57.7219, 12.0498); // östra sjukhuset
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private final Tuple patient_position = new Tuple(6.8155, -5.2549);
+    private final Coordinate patient_position = new Coordinate(6.8155, -5.2549);
 
 
-    private boolean isLocationOutsideThreshold(Tuple current,
-                                               Tuple target, float threshold) {
+    private boolean isLocationOutsideThreshold(Coordinate current,
+                                               Coordinate target, float threshold) {
         float[] results = new float[1];
         Location.distanceBetween(current.getLatitude(), current.getLongitude(), target.getLatitude(), target.getLongitude(), results);
         float distanceInMeters = results[0];
@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        Tuple current = new Tuple(latitude, longitude);
+        Coordinate current = new Coordinate(latitude, longitude);
 
-        Tuple patient = new Tuple(patient_position.getLatitude(), patient_position.getLongitude());
+        Coordinate patient = new Coordinate(patient_position.getLatitude(), patient_position.getLongitude());
 
         // Location outside 100m? then we've left hospital
         if(isLocationOutsideThreshold(current, ambulance_station, 100) /* Check if this is the correct time stamp*/){
