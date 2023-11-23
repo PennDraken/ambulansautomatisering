@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         Tuple patient = new Tuple(patient_position.getLatitude(), patient_position.getLongitude());
 
         // Location outside 100m? then we've left hospital
-        if(isLocationOutsideThreshold(current, ambulance_station, 100)){
+        if(isLocationOutsideThreshold(current, ambulance_station, 100) /* Check if this is the correct time stamp*/){
             // lägg till tidsnotering_n i lista?
 
             // Update the TextView with the new location
