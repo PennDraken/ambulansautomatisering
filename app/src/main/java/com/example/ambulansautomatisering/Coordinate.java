@@ -1,10 +1,10 @@
 package com.example.ambulansautomatisering;
 
-public class Tuple<A, B> {
+public class Coordinate<A, B> {
     private final double latitude;
     private final double longitude;
 
-    public Tuple(double latitude, double longitude) {
+    public Coordinate(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
