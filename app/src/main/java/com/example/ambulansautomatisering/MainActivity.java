@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener {
+public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
     private SensorManager sensorManager;
@@ -72,15 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        accTextView = findViewById(R.id.accTextView);;
-
         locationHelper = new LocationHelper(this, this);
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-        if (sensorManager != null) {
-            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        }
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -89,9 +81,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         } else {
             // Permission already granted, proceed with getting location and starting accelerometer updates
             locationHelper.startLocationUpdates();
-            if (accelerometerSensor != null) {
-                sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            }
         }
     }
 
@@ -100,10 +89,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onResume() {
         super.onResume();
         locationHelper.startLocationUpdates();
-
-        if (accelerometerSensor != null) {
-            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
     }
 
     @Override
@@ -111,10 +96,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onPause() {
         super.onPause();
         locationHelper.stopLocationUpdates();
-
-        if (accelerometerSensor != null) {
-            sensorManager.unregisterListener(this);
-        }
     }
 
     @Override
@@ -178,26 +159,5 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
          */
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-
-
-            double total_acc = Math.sqrt(x*x+y*y+z*z);
-
-            // Update TextViews or perform other actions with accelerometer data
-
-            accTextView.setText("Acceleration: " + total_acc);
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-        // syntaxerror if not added
     }
 }
