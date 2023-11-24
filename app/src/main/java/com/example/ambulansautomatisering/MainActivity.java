@@ -34,7 +34,9 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     private TextView accTextView;
 
+    public List<Task> tasks = new ArrayList<Task>();
 
 
     private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
@@ -70,7 +73,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         setContentView(R.layout.activity_main);
 
         accTextView = findViewById(R.id.accTextView);;
+
         locationHelper = new LocationHelper(this, this);
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         if (sensorManager != null) {
