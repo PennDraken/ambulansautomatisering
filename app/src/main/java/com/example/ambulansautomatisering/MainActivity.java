@@ -23,6 +23,8 @@ import com.google.android.gms.location.LocationServices;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,15 +36,17 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
-    private SensorManager sensorManager;
+
 
     private Date dt_overl;
 
@@ -75,6 +79,33 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         setContentView(R.layout.activity_main);
 
         locationHelper = new LocationHelper(this, this);
+
+        Button test = findViewById(R.id.test);
+
+        // Set a click listener for the button
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Code to be executed when the button is clicked
+                // at the moment it just updates the text of the button
+
+                // Get current date, time and time zone.
+                java.util.Date currentDate = new java.util.Date();
+                // Format the date and time without including the time zone
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+                String current_time = sdf.format(currentDate);
+                test.setText(current_time);
+                // The code below is to reset the button text.
+                test.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        test.setText("Visa nuvarande tid och datum: ");
+                    }
+                }, 2000); // Adjust the delay as needed
+            }
+        });
+
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -109,15 +140,17 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         Coordinate current = new Coordinate(latitude, longitude);
 
+        // Get current date, time and time zone.
+        java.util.Date currentDate = new java.util.Date();
+        // Format the date without including the time zone (to match the excel file Andreas sent)
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String formattedDate = sdf.format(currentDate);
+
+
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
         if(isLocationOutsideThreshold(current, ambulance_station, 100) /* Check if this is the correct time stamp*/){
             // lägg till tidsnotering_n i lista?
-
-            // Get the current time
-            long currentTimeMillis = System.currentTimeMillis();
-            // Convert the time to a Date object if needed
-            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
 
             // Update the TextView with the new location
             String locationText = "Left station";
@@ -127,11 +160,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         /* Time stamp 2 */
         if(!isLocationOutsideThreshold(current, patient_position, 100) && task1.getTS_checked(2)){
-            // Get the current time
-            long currentTimeMillis = System.currentTimeMillis();
-            // Convert the time to a Date object if needed
-            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
-
             // Save in external excel/txt?
             dt_adress = currentDate;
 
@@ -144,11 +172,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         /* Time stamp 5 */
         if(!isLocationOutsideThreshold(current, hospital_pos, 100) && task1.getTS_checked(5)){
-            // Get the current time
-            long currentTimeMillis = System.currentTimeMillis();
-            // Convert the time to a Date object if needed
-            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
-
             // Save in external excel/txt?
             dt_overl = currentDate;
 
