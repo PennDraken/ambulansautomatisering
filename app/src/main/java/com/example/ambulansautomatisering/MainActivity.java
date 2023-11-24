@@ -128,18 +128,22 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
             // Get the current time
             long currentTimeMillis = System.currentTimeMillis();
-
             // Convert the time to a Date object if needed
             java.util.Date currentDate = new java.util.Date(currentTimeMillis);
 
             // Update the TextView with the new location
-            String locationText = "Left station." + " Date: " + currentDate;
+            String locationText = "Left station";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
 
         if(!isLocationOutsideThreshold(current, hospital_pos, 100) /*Also check if this is the correct time stamp*/ ){
             // lägg till tidsnotering_n i lista?
+
+            // Get the current time
+            long currentTimeMillis = System.currentTimeMillis();
+            // Convert the time to a Date object if needed
+            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
 
             // Update the TextView with the new location
             String locationText = "Arrived at hospital";
@@ -149,6 +153,11 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         if(!isLocationOutsideThreshold(current, patient_position, 100) /*Also check if this is the correct time stamp*/){
             // lägg till tidsnotering_n i lista?
+
+            // Get the current time
+            long currentTimeMillis = System.currentTimeMillis();
+            // Convert the time to a Date object if needed
+            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
 
             // Update the TextView with the new location
             String locationText = "Arrived at patient address";
