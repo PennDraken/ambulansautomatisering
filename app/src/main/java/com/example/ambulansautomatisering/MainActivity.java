@@ -49,15 +49,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_adress;
 
 
-    /* create new task when pressing "kvittera" (button not implemented yet) add it to the list of active tasks.
-     This is because they may accept a new task before they left a patient at the hospital.
-     Should be a maximum of 2 tasks active. This level of abstraction may be redundant */
-    private List<Task> tasks = new ArrayList<Task>();
-
-    /* or something like the following to handle the case where they have 2 tasks.
-    public Task task1 = ...
-    public Task task2 = ...
-     */
+    /* create new task when pressing "kvittera" (button not implemented yet). Should be a maximum of 2 tasks */
      private Task task1 = new Task(1);
 
     private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
