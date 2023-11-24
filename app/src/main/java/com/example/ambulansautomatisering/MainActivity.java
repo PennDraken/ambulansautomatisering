@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private TextView accTextView;
 
 
+
     private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
     private final Coordinate hospital_pos = new Coordinate(57.7219, 12.0498); // östra sjukhuset
     // patient pos == null island 10
@@ -125,8 +126,14 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         if(isLocationOutsideThreshold(current, ambulance_station, 100) /* Check if this is the correct time stamp*/){
             // lägg till tidsnotering_n i lista?
 
+            // Get the current time
+            long currentTimeMillis = System.currentTimeMillis();
+
+            // Convert the time to a Date object if needed
+            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
+
             // Update the TextView with the new location
-            String locationText = "Left station";
+            String locationText = "Left station." + " Date: " + currentDate;
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
@@ -139,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+
         if(!isLocationOutsideThreshold(current, patient_position, 100) /*Also check if this is the correct time stamp*/){
             // lägg till tidsnotering_n i lista?
 
