@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_overl;
     private Date dt_adress;
 
-    /* create new task when pressing "kvittera" (button not implemented yet). Should be a maximum of 2 tasks */
-    private Task task1 = new Task(1);
 
     private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
     private final Coordinate hospital_pos = new Coordinate(57.7219, 12.0498); // östra sjukhuset
