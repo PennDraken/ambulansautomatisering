@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private final Coordinate patient_position = new Coordinate(6.8155, -5.2549);
+    private final Coordinate patient_position = new Coordinate(57.6814, 11.9105); // Sven Brolids Väg 9
 
 
 
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) /* Check if this is the correct time stamp*/){
+        if(isLocationOutsideThreshold(current, ambulance_station, 100) && timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 2 */
-        else if(!isLocationOutsideThreshold(current, patient_position, 100) && timeStampManager.isTimeStampChecked(1)){
+        else if(!isLocationOutsideThreshold(current, patient_position, 100) && timeStampManager.isTimeStampChecked(1)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
             String locationText = "Arrived at patient address";
