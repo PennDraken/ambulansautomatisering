@@ -2,6 +2,7 @@ package com.example.ambulansautomatisering;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -34,12 +35,15 @@ import com.google.android.gms.location.LocationServices;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.widget.TimePicker;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -80,6 +84,36 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         buttons[5] = findViewById(R.id.buttonTimeStamp6);
         timeStampManager = new TimeStampManager(buttons);
         locationHelper = new LocationHelper(this, this);
+
+        // This is so the user can change the times of events (in case they were registered wrong)
+        for (int i=0;i<buttons.length;i++) {
+            final int index = i;
+            buttons[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // on below line we are getting the
+                    // instance of our calendar.
+                    final Calendar c = Calendar.getInstance();
+                    int hour = c.get(Calendar.HOUR_OF_DAY);
+                    int minute = c.get(Calendar.MINUTE);
+
+                    // on below line we are initializing our Time Picker Dialog
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
+                            new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay,
+                                                      int minute) {
+                                    java.util.Date currentDate = new java.util.Date();
+                                    currentDate.setHours(hourOfDay);
+                                    currentDate.setMinutes(minute);
+                                    timeStampManager.setTime(index, currentDate);
+                                }
+                            }, hour, minute, false);
+                    timePickerDialog.show();
+                }
+            });
+        }
+
 
         // Makes our "tidsnotera" button clickable (links function onClick() below to onCLick event)
         Button buttonSetTime = findViewById(R.id.buttonSetTime);

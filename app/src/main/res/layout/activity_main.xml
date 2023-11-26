@@ -9,16 +9,19 @@
         android:id="@+id/timestampsLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/locationTextView"
         android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
 
         <!-- TextView 1 -->
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="Start av uppdrag"
+            android:text="På väg mot hämtplats"
             android:textSize="18sp" />
 
         <!-- TextView 2 -->
@@ -71,6 +74,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_toRightOf="@id/timestampsLayout"
+        android:layout_marginTop="16dp"
         android:orientation="vertical">
 
         <!-- Button 1 -->
