@@ -12,7 +12,7 @@ public class Task {
 
     /* Array with booleans for each time stamp, the boolean represent if we have passed the previous time stamp or not.
     E.g if we want to check for time stamp 4, then time stamp 1-3 have to be true */
-   public Boolean[] time_checked = new Boolean[6];
+    public Boolean[] time_checked = new Boolean[6];
 
     public Task(double tasknr) {
         this.tasknr = tasknr;

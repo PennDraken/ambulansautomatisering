@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationServices;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -46,10 +47,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
-
-
     private Date dt_overl;
-
     private Date dt_adress;
 
 
@@ -72,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         return distanceInMeters > threshold;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,10 +77,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         locationHelper = new LocationHelper(this, this);
 
-        Button test = findViewById(R.id.test);
-
-        // Set a click listener for the button
-        test.setOnClickListener(new View.OnClickListener() {
+        // Makes our "tidsnotera" button clickable (links function onClick() to onCLick event)
+        Button buttonSetTime = findViewById(R.id.buttonSetTime);
+        buttonSetTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Code to be executed when the button is clicked
@@ -95,12 +91,12 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
                 String current_time = sdf.format(currentDate);
-                test.setText(current_time);
+                buttonSetTime.setText(current_time);
                 // The code below is to reset the button text.
-                test.postDelayed(new Runnable() {
+                buttonSetTime.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        test.setText("Visa nuvarande tid och datum: ");
+                        buttonSetTime.setText("Visa nuvarande tid och datum: ");
                     }
                 }, 2000); // Adjust the delay as needed
             }
@@ -115,6 +111,15 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Permission already granted, proceed with getting location and starting accelerometer updates
             locationHelper.startLocationUpdates();
         }
+    }
+
+    // This function is called when the user presses the "Notera tid" button
+    public void noteTimeClick() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String currentTime = sdf.format(new Date());
+
+        // Display current time
+        Log.d("CurrentTime", "Current Time: " + currentTime);
     }
 
     @Override
