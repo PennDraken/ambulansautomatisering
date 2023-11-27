@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             final int index = i;
 
             // Get the background color of the button
-            Drawable drawable = buttons[index].getBackground();
+            final Drawable drawable = buttons[index].getBackground();
             final int color_default = Color.BLUE; // TODO needs to match default blue
             buttons[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                                     currentDate.setMinutes(minute);
                                     timeStampManager.setTime(index, currentDate);
                                     //buttons[index].setBackgroundColor(Color.RED);
-                                    buttons[index].setBackgroundColor(color_default);
+                                    buttons[index].setBackground(drawable);
                                 }
                             }, hour, minute, false);
                     timePickerDialog.show();
@@ -150,19 +150,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Permission already granted, proceed with getting location and starting accelerometer updates
             locationHelper.startLocationUpdates();
         }
-    }
-
-    // Utility function which helps getting colors from the theme (used for switching between different colors)
-    private int getColorFromAttribute(int attribute) {
-        Context context = getApplicationContext();
-        Resources.Theme theme = context.getTheme();
-        TypedValue typedValue = new TypedValue();
-        // Resolve the attribute ID
-        theme.resolveAttribute(attribute, typedValue, true);
-        // Extract the color resource ID from the typed value
-        int colorResId = typedValue.resourceId;
-        // Retrieve the actual color value from the color resource ID
-        return context.getResources().getColor(colorResId);
     }
 
     private boolean isLocationOutsideThreshold(Coordinate current,
