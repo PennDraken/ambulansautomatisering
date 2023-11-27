@@ -5,6 +5,11 @@ import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -25,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -39,6 +45,7 @@ import android.widget.TimePicker;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -76,18 +83,22 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         // we need to input our buttons we want to link as an array
         // so that the manager updates the correct UI elements
         Button[] buttons = new Button[6];
-        buttons[0] = findViewById(R.id.buttonTimeStamp1);
-        buttons[1] = findViewById(R.id.buttonTimeStamp2);
-        buttons[2] = findViewById(R.id.buttonTimeStamp3);
-        buttons[3] = findViewById(R.id.buttonTimeStamp4);
-        buttons[4] = findViewById(R.id.buttonTimeStamp5);
-        buttons[5] = findViewById(R.id.buttonTimeStamp6);
+        buttons[0] = (Button) findViewById(R.id.buttonTimeStamp1);
+        buttons[1] = (Button) findViewById(R.id.buttonTimeStamp2);
+        buttons[2] = (Button) findViewById(R.id.buttonTimeStamp3);
+        buttons[3] = (Button) findViewById(R.id.buttonTimeStamp4);
+        buttons[4] = (Button) findViewById(R.id.buttonTimeStamp5);
+        buttons[5] = (Button) findViewById(R.id.buttonTimeStamp6);
         timeStampManager = new TimeStampManager(buttons);
         locationHelper = new LocationHelper(this, this);
 
         // This is so the user can change the times of events (in case they were registered wrong)
         for (int i=0;i<buttons.length;i++) {
             final int index = i;
+
+            // Get the background color of the button
+            Drawable drawable = buttons[index].getBackground();
+            final int color_default = Color.BLUE; // TODO needs to match default blue
             buttons[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -97,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                     int hour = c.get(Calendar.HOUR_OF_DAY);
                     int minute = c.get(Calendar.MINUTE);
 
+                    buttons[index].setBackgroundColor(Color.GRAY);
                     // on below line we are initializing our Time Picker Dialog
                     TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
                             new TimePickerDialog.OnTimeSetListener() {
@@ -107,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                                     currentDate.setHours(hourOfDay);
                                     currentDate.setMinutes(minute);
                                     timeStampManager.setTime(index, currentDate);
+                                    //buttons[index].setBackgroundColor(Color.RED);
+                                    buttons[index].setBackgroundColor(color_default);
                                 }
                             }, hour, minute, false);
                     timePickerDialog.show();
@@ -136,6 +150,19 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Permission already granted, proceed with getting location and starting accelerometer updates
             locationHelper.startLocationUpdates();
         }
+    }
+
+    // Utility function which helps getting colors from the theme (used for switching between different colors)
+    private int getColorFromAttribute(int attribute) {
+        Context context = getApplicationContext();
+        Resources.Theme theme = context.getTheme();
+        TypedValue typedValue = new TypedValue();
+        // Resolve the attribute ID
+        theme.resolveAttribute(attribute, typedValue, true);
+        // Extract the color resource ID from the typed value
+        int colorResId = typedValue.resourceId;
+        // Retrieve the actual color value from the color resource ID
+        return context.getResources().getColor(colorResId);
     }
 
     private boolean isLocationOutsideThreshold(Coordinate current,
