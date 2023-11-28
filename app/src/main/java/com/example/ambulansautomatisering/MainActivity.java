@@ -1,51 +1,23 @@
 package com.example.ambulansautomatisering;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.gms.location.LocationServices;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.widget.TimePicker;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -141,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private boolean isLocationOutsideThreshold(Coordinate current,
                                                Coordinate target, float threshold) {
         float[] results = new float[1];
-        Location.distanceBetween(current.getLatitude(), current.getLongitude(), target.getLatitude(), target.getLongitude(), results);
+        Location.distanceBetween((double) current.getA(), (double)current.getB(), (double)target.getA(), (double)target.getB(), results);
         float distanceInMeters = results[0];
         return distanceInMeters > threshold;
     }
@@ -181,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
+
         if(isLocationOutsideThreshold(current, ambulance_station, 100) && timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location

@@ -1,25 +1,25 @@
 package com.example.ambulansautomatisering;
 
 public class Coordinate {
-    private final double latitude;
+    private final Object a;
 
-    private final double longitude;
+    private final Object b;
 
-    public Coordinate(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public Coordinate(Object latitude, Object longitude) {
+        this.a = latitude;
+        this.b = longitude;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public Object getA() {
+        return a;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public Object getB() {
+        return b;
     }
 
     @Override
     public String toString() {
-        return "(" + latitude + ", " + longitude + ")";
+        return "(" + a + ", " + b + ")";
     }
 }
