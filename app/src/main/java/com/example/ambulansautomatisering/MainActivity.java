@@ -28,12 +28,12 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_adress;
 
 
-    private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
-    private final Coordinate hospital_pos = new Coordinate(57.7219, 12.0498); // östra sjukhuset
+    private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
+    private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private final Coordinate patient_position = new Coordinate(57.6814, 11.9105); // Sven Brolids Väg 9
+    private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
 
 
 
@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
     }
 
-    private boolean isLocationOutsideThreshold(Coordinate current,
-                                               Coordinate target, float threshold) {
+    private boolean isLocationOutsideThreshold(Tuple current,
+                                               Tuple target, float threshold) {
         float[] results = new float[1];
         Location.distanceBetween((double) current.getA(), (double)current.getB(), (double)target.getA(), (double)target.getB(), results);
         float distanceInMeters = results[0];
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        Coordinate current = new Coordinate(latitude, longitude);
+        Tuple current = new Tuple(latitude, longitude);
 
         // Get current date, time and time zone.
         java.util.Date currentDate = new java.util.Date();

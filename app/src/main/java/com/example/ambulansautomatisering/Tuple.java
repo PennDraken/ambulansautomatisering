@@ -1,11 +1,11 @@
 package com.example.ambulansautomatisering;
 
-public class Coordinate {
+public class Tuple {
     private final Object a;
 
     private final Object b;
 
-    public Coordinate(Object latitude, Object longitude) {
+    public Tuple(Object latitude, Object longitude) {
         this.a = latitude;
         this.b = longitude;
     }
