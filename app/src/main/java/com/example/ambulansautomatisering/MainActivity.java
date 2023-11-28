@@ -42,11 +42,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
-    private SensorManager sensorManager;
-    private Sensor accelerometerSensor;
-
-    private TextView accTextView;
-
     public List<Task> tasks = new ArrayList<Task>();
 
 
