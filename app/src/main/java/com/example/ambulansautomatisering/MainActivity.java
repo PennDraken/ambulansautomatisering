@@ -1,51 +1,23 @@
 package com.example.ambulansautomatisering;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.gms.location.LocationServices;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.widget.TimePicker;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -56,12 +28,12 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_adress;
 
 
-    private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
-    private final Coordinate hospital_pos = new Coordinate(57.7219, 12.0498); // östra sjukhuset
+    private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
+    private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private final Coordinate patient_position = new Coordinate(57.6814, 11.9105); // Sven Brolids Väg 9
+    private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
 
 
 
@@ -123,9 +95,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 // Sets the time of the first non-empty timestamp
                 // Get current date, time and time zone.
                 java.util.Date currentDate = new java.util.Date();
-                timeStampManager.setTime(currentDate);
+                timeStampManager.setTime(5,currentDate);
             }
         });
+        buttonSetTime.setEnabled(false);
 
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
@@ -138,10 +111,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
     }
 
-    private boolean isLocationOutsideThreshold(Coordinate current,
-                                               Coordinate target, float threshold) {
+    private boolean isLocationOutsideThreshold(Tuple current,
+                                               Tuple target, float threshold) {
         float[] results = new float[1];
-        Location.distanceBetween(current.getLatitude(), current.getLongitude(), target.getLatitude(), target.getLongitude(), results);
+        Location.distanceBetween((double) current.getA(), (double)current.getB(), (double)target.getA(), (double)target.getB(), results);
         float distanceInMeters = results[0];
         return distanceInMeters > threshold;
     }
@@ -170,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        Coordinate current = new Coordinate(latitude, longitude);
+        Tuple current = new Tuple(latitude, longitude);
 
         // Get current date, time and time zone.
         java.util.Date currentDate = new java.util.Date();
@@ -181,7 +154,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) && timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
+        /* Time stamp 0 */
+        if(isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
@@ -189,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationTextView.setText(locationText);
         }
 
-        /* Time stamp 2 */
-        else if(!isLocationOutsideThreshold(current, patient_position, 100) && timeStampManager.isTimeStampChecked(1)) {
+        /* Time stamp 1 */
+        else if(!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
             String locationText = "Arrived at patient address";
@@ -198,8 +172,20 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationTextView.setText(locationText);
         }
 
-        /* Time stamp 5 */
-        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && timeStampManager.isTimeStampChecked(4)){
+        /* Time stamp 3 */
+        else if(isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
+            timeStampManager.setTime(3, currentDate);
+            // Update the TextView with the new location
+            String locationText = "Left patient address";
+            TextView locationTextView = findViewById(R.id.locationTextView);
+            locationTextView.setText(locationText);
+        }
+
+        /* Time stamp 4 */
+        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
+            Button buttonSetTime = findViewById(R.id.buttonSetTime);
+            buttonSetTime.setEnabled(true);
+
             // Save in external excel/txt?
             timeStampManager.setTime(4, currentDate);
             // Update the TextView with the new location

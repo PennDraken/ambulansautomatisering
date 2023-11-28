@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class TimeStampManager {
     // Stores the dates and times of our different time stamps
     private Date[] timeStamps = new Date[6];
-    private Button[] buttons;
+    private Button[] buttons ;
 
 
     // Constructor (insert buttons which you want to set)
@@ -53,7 +53,7 @@ public class TimeStampManager {
 
     // Checks if a time stamp has been filled in
     public Boolean isTimeStampChecked(int index) {
-        return timeStamps[index] == null;
+        return timeStamps[index] != null;
     }
 
     // Resets all timeStamps and updates UI
