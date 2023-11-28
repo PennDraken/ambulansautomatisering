@@ -3,6 +3,10 @@ package com.example.ambulansautomatisering;
 import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +25,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener{
+public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
     private Date dt_overl;
@@ -195,5 +199,23 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
 
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+
+            // Process accelerometer data here
+            // Implement logic to determine movement or stationary state
+            // Start/stop timers, etc.
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Handle changes in sensor accuracy if needed
     }
 }
