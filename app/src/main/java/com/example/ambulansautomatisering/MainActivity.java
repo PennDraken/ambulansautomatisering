@@ -95,9 +95,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 // Sets the time of the first non-empty timestamp
                 // Get current date, time and time zone.
                 java.util.Date currentDate = new java.util.Date();
-                timeStampManager.setTime(currentDate);
+                timeStampManager.setTime(5,currentDate);
             }
         });
+        buttonSetTime.setEnabled(false);
 
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
@@ -153,8 +154,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
-
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) && timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
+        /* Time stamp 0 */
+        if(isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
@@ -162,8 +163,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationTextView.setText(locationText);
         }
 
-        /* Time stamp 2 */
-        else if(!isLocationOutsideThreshold(current, patient_position, 100) && timeStampManager.isTimeStampChecked(1)) {
+        /* Time stamp 1 */
+        else if(!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
             String locationText = "Arrived at patient address";
@@ -171,8 +172,20 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationTextView.setText(locationText);
         }
 
-        /* Time stamp 5 */
-        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && timeStampManager.isTimeStampChecked(4)){
+        /* Time stamp 3 */
+        else if(isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
+            timeStampManager.setTime(3, currentDate);
+            // Update the TextView with the new location
+            String locationText = "Left patient address";
+            TextView locationTextView = findViewById(R.id.locationTextView);
+            locationTextView.setText(locationText);
+        }
+
+        /* Time stamp 4 */
+        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
+            Button buttonSetTime = findViewById(R.id.buttonSetTime);
+            buttonSetTime.setEnabled(true);
+
             // Save in external excel/txt?
             timeStampManager.setTime(4, currentDate);
             // Update the TextView with the new location
