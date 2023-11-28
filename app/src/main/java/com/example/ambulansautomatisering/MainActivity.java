@@ -2,6 +2,7 @@ package com.example.ambulansautomatisering;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -23,6 +24,9 @@ import com.google.android.gms.location.LocationServices;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,18 +35,25 @@ import com.google.android.gms.location.LocationServices;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.widget.TimePicker;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
-    public List<Task> tasks = new ArrayList<Task>();
+    private Date dt_overl;
+    private Date dt_adress;
 
 
     private final Coordinate ambulance_station = new Coordinate(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
@@ -50,24 +61,72 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private final Coordinate patient_position = new Coordinate(6.8155, -5.2549);
+    private final Coordinate patient_position = new Coordinate(57.6814, 11.9105); // Sven Brolids Väg 9
 
 
-    private boolean isLocationOutsideThreshold(Coordinate current,
-                                               Coordinate target, float threshold) {
-        float[] results = new float[1];
-        Location.distanceBetween(current.getLatitude(), current.getLongitude(), target.getLatitude(), target.getLongitude(), results);
-        float distanceInMeters = results[0];
-        return distanceInMeters > threshold;
-    }
 
+    private TimeStampManager timeStampManager; // handles our timestamps
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // declares our timeStampManager
+        // we need to input our buttons we want to link as an array
+        // so that the manager updates the correct UI elements
+        Button[] buttons = new Button[6];
+        buttons[0] = findViewById(R.id.buttonTimeStamp1);
+        buttons[1] = findViewById(R.id.buttonTimeStamp2);
+        buttons[2] = findViewById(R.id.buttonTimeStamp3);
+        buttons[3] = findViewById(R.id.buttonTimeStamp4);
+        buttons[4] = findViewById(R.id.buttonTimeStamp5);
+        buttons[5] = findViewById(R.id.buttonTimeStamp6);
+        timeStampManager = new TimeStampManager(buttons);
         locationHelper = new LocationHelper(this, this);
+
+        // This is so the user can change the times of events (in case they were registered wrong)
+        for (int i=0;i<buttons.length;i++) {
+            final int index = i;
+            buttons[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // on below line we are getting the
+                    // instance of our calendar.
+                    final Calendar c = Calendar.getInstance();
+                    int hour = c.get(Calendar.HOUR_OF_DAY);
+                    int minute = c.get(Calendar.MINUTE);
+
+                    // on below line we are initializing our Time Picker Dialog
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
+                            new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay,
+                                                      int minute) {
+                                    java.util.Date currentDate = new java.util.Date();
+                                    currentDate.setHours(hourOfDay);
+                                    currentDate.setMinutes(minute);
+                                    timeStampManager.setTime(index, currentDate);
+                                }
+                            }, hour, minute, false);
+                    timePickerDialog.show();
+                }
+            });
+        }
+
+
+        // Makes our "tidsnotera" button clickable (links function onClick() below to onCLick event)
+        Button buttonSetTime = findViewById(R.id.buttonSetTime);
+        buttonSetTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Sets the time of the first non-empty timestamp
+                // Get current date, time and time zone.
+                java.util.Date currentDate = new java.util.Date();
+                timeStampManager.setTime(currentDate);
+            }
+        });
+
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -79,6 +138,15 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
     }
 
+    private boolean isLocationOutsideThreshold(Coordinate current,
+                                               Coordinate target, float threshold) {
+        float[] results = new float[1];
+        Location.distanceBetween(current.getLatitude(), current.getLongitude(), target.getLatitude(), target.getLongitude(), results);
+        float distanceInMeters = results[0];
+        return distanceInMeters > threshold;
+    }
+
+
     @Override
     // This is when activity is reopened
     protected void onResume() {
@@ -86,6 +154,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         locationHelper.startLocationUpdates();
     }
 
+
+
+    /* Remove? since we want to use the app in the back ground. */
     @Override
     // This is when activity loses focus
     protected void onPause() {
@@ -101,58 +172,42 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
         Coordinate current = new Coordinate(latitude, longitude);
 
-        Coordinate patient = new Coordinate(patient_position.getLatitude(), patient_position.getLongitude());
+        // Get current date, time and time zone.
+        java.util.Date currentDate = new java.util.Date();
+        // Format the date without including the time zone (to match the excel file Andreas sent)
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String formattedDate = sdf.format(currentDate);
 
-        // Location outside 100m? then we've left hospital
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) /* Check if this is the correct time stamp*/){
-            // lägg till tidsnotering_n i lista?
 
-            // Get the current time
-            long currentTimeMillis = System.currentTimeMillis();
-            // Convert the time to a Date object if needed
-            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
-
+        /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
+         change to "kvittering"? */
+        if(isLocationOutsideThreshold(current, ambulance_station, 100) && timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
+            timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
 
-        if(!isLocationOutsideThreshold(current, hospital_pos, 100) /*Also check if this is the correct time stamp*/ ){
-            // lägg till tidsnotering_n i lista?
+        /* Time stamp 2 */
+        else if(!isLocationOutsideThreshold(current, patient_position, 100) && timeStampManager.isTimeStampChecked(1)) {
+            timeStampManager.setTime(1, currentDate);
+            // Update the TextView with the new location
+            String locationText = "Arrived at patient address";
+            TextView locationTextView = findViewById(R.id.locationTextView);
+            locationTextView.setText(locationText);
+        }
 
-            // Get the current time
-            long currentTimeMillis = System.currentTimeMillis();
-            // Convert the time to a Date object if needed
-            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
-
+        /* Time stamp 5 */
+        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && timeStampManager.isTimeStampChecked(4)){
+            // Save in external excel/txt?
+            timeStampManager.setTime(4, currentDate);
             // Update the TextView with the new location
             String locationText = "Arrived at hospital";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
 
-        if(!isLocationOutsideThreshold(current, patient_position, 100) /*Also check if this is the correct time stamp*/){
-            // lägg till tidsnotering_n i lista?
 
-            // Get the current time
-            long currentTimeMillis = System.currentTimeMillis();
-            // Convert the time to a Date object if needed
-            java.util.Date currentDate = new java.util.Date(currentTimeMillis);
-
-            // Update the TextView with the new location
-            String locationText = "Arrived at patient address";
-            TextView locationTextView = findViewById(R.id.locationTextView);
-            locationTextView.setText(locationText);
-        }
-        /*
-        else {
-            // Update the TextView with the new location
-            String locationText = "Idling";
-            TextView locationTextView = findViewById(R.id.locationTextView);
-            locationTextView.setText(locationText);
-        }
-
-         */
     }
 }
