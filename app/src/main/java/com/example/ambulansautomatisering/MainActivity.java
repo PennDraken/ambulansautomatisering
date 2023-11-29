@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         //declare sensorManager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager != null) {
@@ -226,7 +226,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             float y = event.values[1];
             float z = event.values[2];
 
-            double acceleration = Math.sqrt(x*x + y*y + z*z);
+            int scale = 1000;
+            double acceleration = Math.round(Math.sqrt(x*x + y*y + z*z)*scale);
+            acceleration = acceleration / scale;
 
             accTextView.setText("Acceleration: " + acceleration);
             // Process accelerometer data here
