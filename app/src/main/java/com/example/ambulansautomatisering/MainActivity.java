@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             int scale = 1000;
             double acceleration = Math.round(Math.sqrt(x*x + y*y + z*z)*scale);
             acceleration = acceleration / scale;
-            double threshold = 0.5;
+            double threshold = 2;
 
             if (acceleration < threshold) {
                 if (!isStandingStill) {
@@ -244,9 +244,14 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 } else {
                     long currentTime = System.currentTimeMillis();
                     standingStillTime += currentTime - startTime;
+                    startTime = currentTime;
                 }
             } else {
-                isStandingStill = false;
+                if(isStandingStill){
+                    isStandingStill = false;
+                    startTime = System.currentTimeMillis();
+                    standingStillTime = 0;
+                }
             }
 
             accTextView1.setText("Acceleration: " + acceleration);
