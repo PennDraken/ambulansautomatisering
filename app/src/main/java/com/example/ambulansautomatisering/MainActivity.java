@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         //declare sensorManager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager != null) {
-            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         }
 
         accTextView1 = findViewById(R.id.accTextView1);
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
