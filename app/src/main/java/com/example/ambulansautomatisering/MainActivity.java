@@ -31,10 +31,15 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private LocationHelper locationHelper;
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
+
+    private boolean isStandingStill = false;
+    private long startTime = 0;
+    private long standingStillTime = 0;
     private Date dt_overl;
     private Date dt_adress;
 
-    private TextView accTextView;
+    private TextView accTextView1;
+    private TextView accTextView2;
 
 
     private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
@@ -59,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
 
-        accTextView = findViewById(R.id.accTextView);
+        accTextView1 = findViewById(R.id.accTextView1);
+        accTextView2 = findViewById(R.id.accTextView2);
 
 
         // declares our timeStampManager
@@ -229,8 +235,22 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             int scale = 1000;
             double acceleration = Math.round(Math.sqrt(x*x + y*y + z*z)*scale);
             acceleration = acceleration / scale;
+            double threshold = 0.5;
 
-            accTextView.setText("Acceleration: " + acceleration);
+            if (acceleration < threshold) {
+                if (!isStandingStill) {
+                    isStandingStill = true;
+                    startTime = System.currentTimeMillis();
+                } else {
+                    long currentTime = System.currentTimeMillis();
+                    standingStillTime += currentTime - startTime;
+                }
+            } else {
+                isStandingStill = false;
+            }
+
+            accTextView1.setText("Acceleration: " + acceleration);
+            accTextView2.setText("Time still: " + standingStillTime);
             // Process accelerometer data here
             // Implement logic to determine movement or stationary state
             // Start/stop timers, etc.

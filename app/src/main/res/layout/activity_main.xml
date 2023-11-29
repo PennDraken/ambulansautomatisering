@@ -63,6 +63,8 @@
             android:layout_height="50dp"
             android:text="Överlämning"
             android:textSize="18sp" />
+
+
     </LinearLayout>
 
     <!-- LinearLayout for Buttons -->
@@ -136,7 +138,21 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/accTextView"
+        android:id="@+id/accTextView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/accTextView2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="88dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="18dp"
+        android:text="Acceleration: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/accTextView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/locationTextView"
@@ -146,7 +162,7 @@
         android:layout_marginStart="88dp"
         android:layout_marginEnd="148dp"
         android:layout_marginBottom="18dp"
-        android:text="Acceleration: "
+        android:text="Time still: "
         android:textSize="18sp" />
 
     <Button
