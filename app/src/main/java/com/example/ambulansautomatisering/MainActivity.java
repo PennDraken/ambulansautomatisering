@@ -1,6 +1,7 @@
 package com.example.ambulansautomatisering;
 
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.hardware.Sensor;
@@ -28,6 +29,8 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationHelper locationHelper;
+    private SensorManager sensorManager;
+    private Sensor accelerometerSensor;
     private Date dt_overl;
     private Date dt_adress;
 
@@ -47,6 +50,12 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //declare sensorManager
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        if (sensorManager != null) {
+            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
 
         // declares our timeStampManager
         // we need to input our buttons we want to link as an array
@@ -129,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onResume() {
         super.onResume();
         locationHelper.startLocationUpdates();
+        if(accelerometerSensor != null){
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
 
@@ -139,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onPause() {
         super.onPause();
         locationHelper.stopLocationUpdates();
+        sensorManager.unregisterListener(this);
     }
 
     @Override
