@@ -135,6 +135,20 @@
         android:text="Location not available"
         android:textSize="18sp" />
 
+    <TextView
+        android:id="@+id/accTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/locationTextView"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="88dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="18dp"
+        android:text="Acceleration: "
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/buttonSetTime"
         android:layout_width="match_parent"

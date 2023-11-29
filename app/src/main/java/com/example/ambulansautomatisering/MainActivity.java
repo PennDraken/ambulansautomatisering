@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_overl;
     private Date dt_adress;
 
+    private TextView accTextView;
+
 
     private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
     private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
@@ -50,12 +52,15 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        
         //declare sensorManager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager != null) {
             accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
+
+        accTextView = findViewById(R.id.accTextView);
+
 
         // declares our timeStampManager
         // we need to input our buttons we want to link as an array
@@ -221,6 +226,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             float y = event.values[1];
             float z = event.values[2];
 
+            double acceleration = Math.sqrt(x*x + y*y + z*z);
+
+            accTextView.setText("Acceleration: " + acceleration);
             // Process accelerometer data here
             // Implement logic to determine movement or stationary state
             // Start/stop timers, etc.
