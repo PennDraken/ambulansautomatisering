@@ -150,12 +150,5 @@
         android:textSize="30dp" />
 
 
-    <Button
-        android:id="@+id/simulateMessageButton"
-        android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:layout_above="@+id/buttonSetTime"
-        android:layout_marginBottom="138dp"
-        android:text="Skicka kvittens" />
 
 </RelativeLayout>
