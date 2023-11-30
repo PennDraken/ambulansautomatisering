@@ -1,6 +1,7 @@
 package com.example.ambulansautomatisering;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 public class HomeScreen extends AppCompatActivity {
 
@@ -26,7 +29,6 @@ public class HomeScreen extends AppCompatActivity {
             }
         });
     }
-
 
     // Variabel för att hålla dialogobjektet globalt
     private AlertDialog confirmationDialog;
@@ -80,9 +82,11 @@ public class HomeScreen extends AppCompatActivity {
     }
 
     // Använd denna metod för att visa popup-rutan när du får ett meddelande
-    private void showMessageReceived() {
+    protected void showMessageReceived() {
         // Visa popup-rutan
         showConfirmationDialog();
     }
+    Test test = new Test();
+    test.testReceipt(4);
 }
 

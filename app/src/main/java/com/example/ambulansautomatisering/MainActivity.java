@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+        
 
 
     }
