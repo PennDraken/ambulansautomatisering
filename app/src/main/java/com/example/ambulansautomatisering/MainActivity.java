@@ -1,6 +1,8 @@
 package com.example.ambulansautomatisering;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -38,9 +40,23 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
 
     private TimeStampManager timeStampManager; // handles our timestamps
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.hemskarm);
+
+        // Lägg till en knapp för att simulera ett meddelande
+        Button simulateMessageButton = findViewById(R.id.simulateMessageButton);
+        simulateMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Simulera att du har fått ett meddelande
+                showMessageReceived();
+            }
+        });
+    }
+
+    protected void onCreate1(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -137,6 +153,61 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         locationHelper.stopLocationUpdates();
     }
 
+
+    // Variabel för att hålla dialogobjektet globalt
+    private AlertDialog confirmationDialog;
+    // Lägg till denna metod i din MainActivity klass för att visa popup-rutan
+    private void showConfirmationDialog() {
+        // Skapa en AlertDialog.Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Ställ in titel och meddelande
+        builder.setTitle("Kvittera uppdrag");
+        builder.setMessage("Vill du kvittera uppdraget?");
+
+        // Lägg till knapp för att acceptera (Ja)
+        builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Här kan du lägga till kod för att hantera kvitteringen av uppdraget
+                // Exempel: visa en toast, spara kvittens i databasen, etc.
+                setContentView(R.layout.activity_main);
+            }
+        });
+
+        // Lägg till knapp för att avbryta (Nej)
+        builder.setNegativeButton("Nej", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Stäng befintlig dialog
+                dialog.dismiss();
+
+                // Skapa en ny dialog med uppdaterad text och en OK-knapp
+                AlertDialog.Builder updatedBuilder = new AlertDialog.Builder(MainActivity.this);
+                updatedBuilder.setTitle("Uppdrag nekat");
+                updatedBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Klick på OK, stäng popup-rutan
+                        dialog.dismiss();
+                    }
+                });
+                // Spara den uppdaterade dialogen globalt
+                confirmationDialog = updatedBuilder.create();
+
+                // Visa den uppdaterade dialogen
+                confirmationDialog.show();
+            }
+        });
+
+        // Skapa och visa AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Använd denna metod för att visa popup-rutan när du får ett meddelande
+    private void showMessageReceived() {
+        // Visa popup-rutan
+        showConfirmationDialog();
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         // Handle the updated location here
@@ -155,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
         /* Time stamp 0 */
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
+        if(isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
@@ -182,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 4 */
+
         else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
             Button buttonSetTime = findViewById(R.id.buttonSetTime);
             buttonSetTime.setEnabled(true);
@@ -193,7 +265,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
-
 
     }
 }

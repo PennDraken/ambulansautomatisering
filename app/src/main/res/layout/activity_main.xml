@@ -8,12 +8,12 @@
     <LinearLayout
         android:id="@+id/timestampsLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_above="@+id/locationTextView"
         android:layout_alignParentTop="true"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="247dp"
         android:orientation="vertical">
 
         <!-- TextView 1 -->
@@ -148,5 +148,6 @@
         android:layout_marginBottom="21dp"
         android:text="Klar"
         android:textSize="30dp" />
+
 
 </RelativeLayout>
