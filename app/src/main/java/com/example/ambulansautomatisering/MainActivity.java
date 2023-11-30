@@ -1,6 +1,10 @@
 package com.example.ambulansautomatisering;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -39,10 +43,21 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     private TimeStampManager timeStampManager; // handles our timestamps
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Lägg till en knapp för att simulera ett meddelande
+        Button simulateMessageButton = findViewById(R.id.simulateMessageButton);
+        simulateMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Simulera att du har fått ett meddelande
+                showMessageReceived();
+            }
+        });
 
         // declares our timeStampManager
         // we need to input our buttons we want to link as an array
@@ -136,6 +151,68 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         super.onPause();
         locationHelper.stopLocationUpdates();
     }
+
+
+
+
+    // Variabel för att hålla dialogobjektet globalt
+    private AlertDialog confirmationDialog;
+    // Lägg till denna metod i din MainActivity klass för att visa popup-rutan
+    private void showConfirmationDialog() {
+        // Skapa en AlertDialog.Builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Ställ in titel och meddelande
+        builder.setTitle("Kvittera uppdrag");
+        builder.setMessage("Vill du kvittera uppdraget?");
+
+        // Lägg till knapp för att acceptera (Ja)
+        builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                
+                // Här kan du lägga till kod för att hantera kvitteringen av uppdraget
+                // Exempel: visa en toast, spara kvittens i databasen, etc.
+
+                // send "kvittens", update UI
+                //startActivity(new Intent(MainActivity.this, MainActivity.class));
+            }
+        });
+
+        // Lägg till knapp för att avbryta (Nej)
+        builder.setNegativeButton("Nej", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // Stäng befintlig dialog
+                dialog.dismiss();
+
+                // Skapa en ny dialog med uppdaterad text och en OK-knapp
+                AlertDialog.Builder updatedBuilder = new AlertDialog.Builder(MainActivity.this);
+                updatedBuilder.setTitle("Uppdrag nekat");
+                updatedBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Klick på OK, stäng popup-rutan
+                        dialog.dismiss();
+                    }
+                });
+                // Spara den uppdaterade dialogen globalt
+                confirmationDialog = updatedBuilder.create();
+
+                // Visa den uppdaterade dialogen
+                confirmationDialog.show();
+            }
+        });
+
+        // Skapa och visa AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Använd denna metod för att visa popup-rutan när du får ett meddelande
+    private void showMessageReceived() {
+        // Visa popup-rutan
+        showConfirmationDialog();
+    }
+
+
 
     @Override
     public void onLocationChanged(Location location) {
