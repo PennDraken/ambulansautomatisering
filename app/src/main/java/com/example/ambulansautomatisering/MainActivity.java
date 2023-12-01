@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Sensor accelerometerSensor;
 
     private boolean isStandingStill = false;
-    private long startTime = 0;
+    private long standingStillStartTime = 0;
     private long standingStillTime = 0;
     private Date dt_overl;
     private Date dt_adress;
@@ -41,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private TextView accTextView1;
     private TextView accTextView2;
 
+    private Tuple timeForStandingStill;
+    private ArrayList<Tuple> listOfTimeForStandingStill = new ArrayList<Tuple>();
 
     private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
     private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
@@ -235,21 +239,31 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             int scale = 1000;
             double acceleration = Math.round(Math.sqrt(x*x + y*y + z*z)*scale);
             acceleration = acceleration / scale;
-            double threshold = 2;
+            double threshold = 8;
 
             if (acceleration < threshold) {
                 if (!isStandingStill) {
                     isStandingStill = true;
-                    startTime = System.currentTimeMillis();
+                    standingStillStartTime = System.currentTimeMillis();
                 } else {
                     long currentTime = System.currentTimeMillis();
-                    standingStillTime += currentTime - startTime;
-                    startTime = currentTime;
+                    standingStillTime += currentTime - standingStillStartTime;
+                    standingStillStartTime = currentTime;
                 }
             } else {
-                if(isStandingStill){
+                if(isStandingStill){    //start moving again
                     isStandingStill = false;
-                    startTime = System.currentTimeMillis();
+                    //add this time together with the start time in a list of tuples
+                    timeForStandingStill = new Tuple(standingStillTime, standingStillStartTime);
+                    listOfTimeForStandingStill.add(timeForStandingStill);
+                    //Print-testing: get last element
+                    //might want a better data structure for getting max standing still time value
+                    //very sensitive to small fast movements, and if threshold too big then it cant sense
+                    //"long" slow movements like slow walking
+                    Tuple test = listOfTimeForStandingStill.get(listOfTimeForStandingStill.size() - 1);
+                    Log.d("Standing still now", test.toString());
+                    //reset the values
+                    standingStillStartTime = System.currentTimeMillis();
                     standingStillTime = 0;
                 }
             }
