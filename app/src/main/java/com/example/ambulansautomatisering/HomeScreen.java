@@ -1,16 +1,12 @@
 package com.example.ambulansautomatisering;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
 
 public class HomeScreen extends AppCompatActivity {
 
@@ -25,13 +21,14 @@ public class HomeScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Simulera att du har fått ett meddelande
-                showMessageReceived();
+                showConfirmationDialog();
             }
         });
     }
 
     // Variabel för att hålla dialogobjektet globalt
     private AlertDialog confirmationDialog;
+
     // Lägg till denna metod i din MainActivity klass för att visa popup-rutan
     private void showConfirmationDialog() {
         // Skapa en AlertDialog.Builder
@@ -44,7 +41,6 @@ public class HomeScreen extends AppCompatActivity {
         // Lägg till knapp för att acceptera (Ja)
         builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
                 // Här kan du lägga till kod för att hantera kvitteringen av uppdraget
                 // Exempel: visa en toast, spara kvittens i databasen, etc.
 
@@ -83,10 +79,7 @@ public class HomeScreen extends AppCompatActivity {
 
     // Använd denna metod för att visa popup-rutan när du får ett meddelande
     protected void showMessageReceived() {
-        // Visa popup-rutan
-        showConfirmationDialog();
+        // Implementera logiken här för att hantera ett mottaget meddelande
+        // Till exempel: visa en toast, uppdatera UI, etc.
     }
-    Test test = new Test();
-    test.testReceipt(4);
 }
-

@@ -1,29 +1,24 @@
 package com.example.ambulansautomatisering;
-import android.content.Context;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Test extends HomeScreen{
-    private int delay;
+public class Test {
     public Test() {
-        
+
     }
 
-    void testReceipt(int delay){
+    public void testReceipt(int delay){
         Timer timer = new Timer();
-        Test test = new Test();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                test.showMessageReceived();
+                // Create an instance of HomeScreen to call showMessageReceived()
+                HomeScreen homeScreen = new HomeScreen();
+                homeScreen.showMessageReceived();
             }
         };
         // schedule task
         timer.schedule(task, delay);
     }
-
-
 }
