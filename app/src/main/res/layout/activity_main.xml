@@ -149,4 +149,6 @@
         android:text="Klar"
         android:textSize="30dp" />
 
+
+
 </RelativeLayout>

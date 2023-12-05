@@ -1,6 +1,10 @@
 package com.example.ambulansautomatisering;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
 
     private TimeStampManager timeStampManager; // handles our timestamps
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         locationHelper.stopLocationUpdates();
     }
 
+
+
     @Override
     public void onLocationChanged(Location location) {
         // Handle the updated location here
@@ -193,7 +200,5 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
-
-
     }
 }
