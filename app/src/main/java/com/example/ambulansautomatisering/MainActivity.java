@@ -1,15 +1,18 @@
 package com.example.ambulansautomatisering;
 
+import android.Manifest;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,34 +20,41 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import android.widget.TimePicker;
+
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.ActivityRecognitionClient;
+import com.google.android.gms.location.ActivityTransition;
+import com.google.android.gms.location.ActivityTransitionEvent;
+import com.google.android.gms.location.ActivityTransitionRequest;
+import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, SensorEventListener{
+
+public class MainActivity extends AppCompatActivity implements LocationHelper.LocationListener, EasyPermissions.PermissionCallbacks{
     private static final int REQUEST_LOCATION_PERMISSION = 1;
+    public static final int REQUEST_ACTIVITY_TRANSITION = 123;
+    public static final int REQUEST_ACTIVITY_TRANSITION_RECEIVER = 166;
     private LocationHelper locationHelper;
-    private SensorManager sensorManager;
-    private Sensor accelerometerSensor;
 
-    private boolean isStandingStill = false;
-    private long standingStillStartTime = 0;
-    private long standingStillTime = 0;
     private Date dt_overl;
     private Date dt_adress;
-
-    private TextView accTextView1;
-    private TextView accTextView2;
-
-    private Tuple timeForStandingStill;
-    private ArrayList<Tuple> listOfTimeForStandingStill = new ArrayList<Tuple>();
 
     private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
     private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
@@ -53,24 +63,38 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
 
-
-
     private TimeStampManager timeStampManager; // handles our timestamps
+    private Switch simpleSwitch;
+    private TextView test;
+    private ActivityRecognitionClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //declare sensorManager
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        if (sensorManager != null) {
-            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        }
+        client = ActivityRecognition.getClient(this);
+        test = findViewById(R.id.txt_activity);
 
-        accTextView1 = findViewById(R.id.accTextView1);
-        accTextView2 = findViewById(R.id.accTextView2);
-
+        simpleSwitch = findViewById(R.id.simpleSwitch);
+        simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !hasPerm(MainActivity.this)){
+                        test.setText("no permission!");
+                        simpleSwitch.setChecked(false);
+                        requestActivityTransitionPermission();
+                    } else {
+                        test.setText("permission!");
+                        requestForUpdates();
+                    }
+                } else {
+                    test.setText("inte checked");
+                    removeUpdates();
+                }
+            }
+        });
 
         // declares our timeStampManager
         // we need to input our buttons we want to link as an array
@@ -86,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         locationHelper = new LocationHelper(this, this);
 
         // This is so the user can change the times of events (in case they were registered wrong)
-        for (int i=0;i<buttons.length;i++) {
+        for (int i = 0; i < buttons.length; i++) {
             final int index = i;
             buttons[i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -123,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 // Sets the time of the first non-empty timestamp
                 // Get current date, time and time zone.
                 java.util.Date currentDate = new java.util.Date();
-                timeStampManager.setTime(5,currentDate);
+                timeStampManager.setTime(5, currentDate);
             }
         });
         buttonSetTime.setEnabled(false);
@@ -138,11 +162,113 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationHelper.startLocationUpdates();
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void requestActivityTransitionPermission(){
+        EasyPermissions.requestPermissions(
+                this,
+                "You need to allow activity tranisiton permissions in order to use this feature",
+                REQUEST_ACTIVITY_TRANSITION,
+                Manifest.permission.ACTIVITY_RECOGNITION
+        );
+    }
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms){
+        simpleSwitch.setChecked(true);
+        requestForUpdates();
+    }
+    @RequiresApi(Build.VERSION_CODES.Q)
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms){
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        } else {
+            requestActivityTransitionPermission();
+        }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public boolean hasPerm(Context context) {
+        return EasyPermissions.hasPermissions(
+                context,
+                android.Manifest.permission.ACTIVITY_RECOGNITION);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    private void requestForUpdates() {
+        client.requestActivityTransitionUpdates(
+                        getTransitionRequest(),
+                        getPendingIntent()
+                )
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("asd" ,"Success - requesting updates");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("asd" ,"Failure - requesting updates");
+                    }
+                });
+    }
+
+    private void removeUpdates(){
+        client.removeActivityTransitionUpdates(getPendingIntent());
+    }
+    private PendingIntent getPendingIntent(){
+        Intent intent = new Intent(this, ActivityTransitionReceiver.class);
+        return PendingIntent.getBroadcast(
+                this,
+                REQUEST_ACTIVITY_TRANSITION_RECEIVER,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+    }
+    ActivityTransitionRequest getTransitionRequest() {
+        List transitions = new ArrayList<>();
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.IN_VEHICLE)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.IN_VEHICLE)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.WALKING)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.WALKING)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.STILL)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.STILL)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.RUNNING)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+                .build());
+        transitions.add(new ActivityTransition.Builder()
+                .setActivityType(DetectedActivity.RUNNING)
+                .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+                .build());
+        return new ActivityTransitionRequest(transitions);
+    }
 
     private boolean isLocationOutsideThreshold(Tuple current,
                                                Tuple target, float threshold) {
         float[] results = new float[1];
-        Location.distanceBetween((double) current.getA(), (double)current.getB(), (double)target.getA(), (double)target.getB(), results);
+        Location.distanceBetween((double) current.getA(), (double) current.getB(), (double) target.getA(), (double) target.getB(), results);
         float distanceInMeters = results[0];
         return distanceInMeters > threshold;
     }
@@ -153,11 +279,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onResume() {
         super.onResume();
         locationHelper.startLocationUpdates();
-        if(accelerometerSensor != null){
-            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
     }
-
 
 
     /* Remove? since we want to use the app in the back ground. */
@@ -166,7 +288,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onPause() {
         super.onPause();
         locationHelper.stopLocationUpdates();
-        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -187,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
         /* Time stamp 0 */
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
+        if (isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
@@ -196,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 1 */
-        else if(!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
+        else if (!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
             String locationText = "Arrived at patient address";
@@ -205,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 3 */
-        else if(isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
+        else if (isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/) {
             timeStampManager.setTime(3, currentDate);
             // Update the TextView with the new location
             String locationText = "Left patient address";
@@ -214,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 4 */
-        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
+        else if (!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)) {
             Button buttonSetTime = findViewById(R.id.buttonSetTime);
             buttonSetTime.setEnabled(true);
 
@@ -225,59 +346,5 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
-
-
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
-
-            int scale = 1000;
-            double acceleration = Math.round(Math.sqrt(x*x + y*y + z*z)*scale);
-            acceleration = acceleration / scale;
-            double threshold = 8;
-
-            if (acceleration < threshold) {
-                if (!isStandingStill) {
-                    isStandingStill = true;
-                    standingStillStartTime = System.currentTimeMillis();
-                } else {
-                    long currentTime = System.currentTimeMillis();
-                    standingStillTime += currentTime - standingStillStartTime;
-                    standingStillStartTime = currentTime;
-                }
-            } else {
-                if(isStandingStill){    //start moving again
-                    isStandingStill = false;
-                    //add this time together with the start time in a list of tuples
-                    timeForStandingStill = new Tuple(standingStillTime, standingStillStartTime);
-                    listOfTimeForStandingStill.add(timeForStandingStill);
-                    //Print-testing: get last element
-                    //might want a better data structure for getting max standing still time value
-                    //very sensitive to small fast movements, and if threshold too big then it cant sense
-                    //"long" slow movements like slow walking
-                    Tuple test = listOfTimeForStandingStill.get(listOfTimeForStandingStill.size() - 1);
-                    Log.d("Standing still now", test.toString());
-                    //reset the values
-                    standingStillStartTime = System.currentTimeMillis();
-                    standingStillTime = 0;
-                }
-            }
-
-            accTextView1.setText("Acceleration: " + acceleration);
-            accTextView2.setText("Time still: " + standingStillTime);
-            // Process accelerometer data here
-            // Implement logic to determine movement or stationary state
-            // Start/stop timers, etc.
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Handle changes in sensor accuracy if needed
     }
 }

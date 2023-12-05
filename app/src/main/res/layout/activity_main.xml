@@ -122,6 +122,14 @@
             android:text="--:--" />
     </LinearLayout>
 
+    <Switch
+        android:id="@+id/simpleSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:text="Activity Transition"
+        android:layout_above="@+id/txt_activity" />
+
 
     <TextView
         android:id="@+id/locationTextView"
@@ -135,6 +143,32 @@
         android:layout_marginEnd="148dp"
         android:layout_marginBottom="18dp"
         android:text="Location not available"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/txt_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/txt_confidence"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="88dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="18dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/txt_confidence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/accTextView1"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="88dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="18dp"
         android:textSize="18sp" />
 
     <TextView
@@ -180,3 +214,4 @@
         android:textSize="30dp" />
 
 </RelativeLayout>
+

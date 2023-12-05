@@ -40,4 +40,15 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // For developers using AndroidX in their applications
+    implementation("pub.devrel:easypermissions:3.0.0")
+
+    // For developers using the Android Support Library
+    implementation("pub.devrel:easypermissions:2.0.1")
+
+    //Timber for logging
+    implementation ("com.jakewharton.timber:timber:5.0.1")
+
+    implementation ("com.google.android.material:material:1.5.0-alpha02")
 }
