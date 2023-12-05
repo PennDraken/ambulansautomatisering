@@ -66,12 +66,16 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private TimeStampManager timeStampManager; // handles our timestamps
     private Switch simpleSwitch;
     private TextView test;
+    private TextView test2;
     private ActivityRecognitionClient client;
+    private static MainActivity ins;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ins = this;
 
         client = ActivityRecognition.getClient(this);
         test = findViewById(R.id.txt_activity);
@@ -161,6 +165,18 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Permission already granted, proceed with getting location and starting accelerometer updates
             locationHelper.startLocationUpdates();
         }
+    }
+    public static MainActivity  getInstace(){
+        return ins;
+    }
+    public void updateTheTextView(final String t) {
+
+        MainActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                TextView textV1 = (TextView) findViewById(R.id.txt_confidence);
+                textV1.setText(t);
+            }
+        });
     }
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void requestActivityTransitionPermission(){
