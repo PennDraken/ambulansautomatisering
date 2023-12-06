@@ -156,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         });
         buttonSetTime.setEnabled(false);
 
-
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Request permissions
@@ -165,6 +164,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Permission already granted, proceed with getting location and starting accelerometer updates
             locationHelper.startLocationUpdates();
         }
+
+        testGetSeconds();
     }
     public static MainActivity  getInstace(){
         return ins;
@@ -178,6 +179,44 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             }
         });
     }
+
+    // Gets how many seconds has passed since activity started
+    public long getSeconds(List<Tuple> timeArray) {
+        long timeEnteredIdle = 0;
+        long maxTimeIdle = 0;
+        // We need to find the value with the longest time spent idle
+        for (int prev_i = 0; prev_i < timeArray.size()-1; prev_i++) {
+            Tuple prev_tuple = timeArray.get(prev_i);
+            long prev_time = (long) prev_tuple.getA();
+            for (int curr_i = 0; curr_i < timeArray.size(); curr_i++) {
+                // We go through all elements and find the value with the longest timespan spent still
+                Tuple curr_tuple = timeArray.get(curr_i);
+                String curr_activity = (String) curr_tuple.getA();
+                long curr_time = (long) curr_tuple.getB();
+                long deltaTime = curr_time - prev_time;
+                if (curr_activity == "STILL" && deltaTime > maxTimeIdle) {
+                    maxTimeIdle = deltaTime;
+                    timeEnteredIdle = curr_time;
+                }
+            }
+        }
+        return timeEnteredIdle;
+    }
+
+    public Boolean testGetSeconds() {
+        List<Tuple> testTuple = new ArrayList<>();
+        testTuple.add(new Tuple(0, "WALKING"));
+        testTuple.add(new Tuple(45, "WALKING"));
+        testTuple.add(new Tuple(150, "IDLE"));
+        testTuple.add(new Tuple(30, "WALKING"));
+        testTuple.add(new Tuple(900, "IDLE"));
+        testTuple.add(new Tuple(1100, "WALKING"));
+        testTuple.add(new Tuple(1500, "IDLE"));
+        testTuple.add(new Tuple(1700, "WALKING"));
+        long time = getSeconds(testTuple);
+        return true;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void requestActivityTransitionPermission(){
         EasyPermissions.requestPermissions(
