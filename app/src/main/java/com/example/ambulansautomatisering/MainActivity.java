@@ -65,10 +65,13 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     private TimeStampManager timeStampManager; // handles our timestamps
     private Switch simpleSwitch;
-    private TextView test;
-    private TextView test2;
     private ActivityRecognitionClient client;
     private static MainActivity ins;
+
+    private long standingStillStartTime = 0;
+    private long standingStillEndTime = 0;
+
+    private long standingStillTime = 0;
 
 
     @Override
@@ -78,23 +81,19 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         ins = this;
 
         client = ActivityRecognition.getClient(this);
-        test = findViewById(R.id.txt_activity);
-
         simpleSwitch = findViewById(R.id.simpleSwitch);
+
         simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked){
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !hasPerm(MainActivity.this)){
-                        test.setText("no permission!");
                         simpleSwitch.setChecked(false);
                         requestActivityTransitionPermission();
                     } else {
-                        test.setText("permission!");
                         requestForUpdates();
                     }
                 } else {
-                    test.setText("inte checked");
                     removeUpdates();
                 }
             }
@@ -169,15 +168,25 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     public static MainActivity  getInstace(){
         return ins;
     }
-    public void updateTheTextView(final String t) {
+    public void updateActivityText(final String t) {
 
         MainActivity.this.runOnUiThread(new Runnable() {
             public void run() {
-                TextView textV1 = (TextView) findViewById(R.id.txt_confidence);
+                TextView textV1 = (TextView) findViewById(R.id.txt_activity);
+                textV1.setText("Activity: " + t);
+            }
+        });
+    }
+    public void updateTimeText(final String t) {
+
+        MainActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                TextView textV1 = (TextView) findViewById(R.id.txt_time_still);
                 textV1.setText(t);
             }
         });
     }
+
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private void requestActivityTransitionPermission(){
         EasyPermissions.requestPermissions(
@@ -362,5 +371,16 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+    }
+
+    public void setStartTime() {
+        standingStillStartTime = System.currentTimeMillis();
+    }
+    public void setEndTime() {
+        standingStillEndTime = System.currentTimeMillis();
+    }
+
+    public long getStandingStillTime() {
+        return standingStillTime = (standingStillEndTime - standingStillStartTime) / 1000;
     }
 }

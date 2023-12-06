@@ -1,6 +1,9 @@
 package com.example.ambulansautomatisering;
 
 
+import static com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_ENTER;
+import static com.google.android.gms.location.ActivityTransition.ACTIVITY_TRANSITION_EXIT;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,8 +11,15 @@ import android.util.Log;
 
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
+
+import java.util.ArrayList;
 
 public class ActivityTransitionReceiver extends BroadcastReceiver {
+    public static final int WALKING = 3;
+    private Tuple timeForStandingStill;
+    private ArrayList<Tuple> listOfTimeForStandingStill = new ArrayList<Tuple>();
+
 
     @Override
     public void onReceive(Context context, Intent intent){
@@ -17,11 +27,21 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
         if (ActivityTransitionResult.hasResult(intent)) {
             ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
             for (ActivityTransitionEvent event : result.getTransitionEvents()) {
-                // Do something useful here...
-                Log.d("asd", ActivityTransitionUtil.toActivityString(event.getActivityType())
-                        + " - " + ActivityTransitionUtil.toTransitionType(event.getTransitionType()));
+                if(event.getActivityType() == WALKING){
+                    if(event.getTransitionType() == ACTIVITY_TRANSITION_ENTER){
+                        //"send" methods to the main instance
+                        MainActivity.getInstace().setStartTime();
+                    } else if (event.getTransitionType() == ACTIVITY_TRANSITION_EXIT) {
+                        MainActivity.getInstace().setEndTime();
+                        //get total standing still time
+                        long totalTime = MainActivity.getInstace().getStandingStillTime();
+                        MainActivity.getInstace().updateTimeText("Seconds still: " + totalTime );
+                    }
+                }
+
+                //view the activity on UI
                 try {
-                    MainActivity.getInstace().updateTheTextView(ActivityTransitionUtil.toActivityString(event.getActivityType()));
+                    MainActivity.getInstace().updateActivityText(ActivityTransitionUtil.toActivityString(event.getActivityType()));
                 } catch (Exception e) {
 
                 }

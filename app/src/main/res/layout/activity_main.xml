@@ -127,8 +127,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="88dp"
-        android:text="Activity Transition"
+        android:text="ActivityRecognition permission: "
+        android:textSize="16sp"
         android:layout_above="@+id/txt_activity" />
+
 
 
     <TextView
@@ -145,48 +147,23 @@
         android:text="Location not available"
         android:textSize="18sp" />
 
+
     <TextView
         android:id="@+id/txt_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/txt_confidence"
+        android:layout_above="@+id/txt_time_still"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="88dp"
         android:layout_marginEnd="148dp"
         android:layout_marginBottom="18dp"
+        android:text="Activity: "
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/txt_confidence"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/accTextView1"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="88dp"
-        android:layout_marginEnd="148dp"
-        android:layout_marginBottom="18dp"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/accTextView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/accTextView2"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="88dp"
-        android:layout_marginEnd="148dp"
-        android:layout_marginBottom="18dp"
-        android:text="Acceleration: "
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/accTextView2"
+        android:id="@+id/txt_time_still"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/locationTextView"
@@ -196,7 +173,7 @@
         android:layout_marginStart="88dp"
         android:layout_marginEnd="148dp"
         android:layout_marginBottom="18dp"
-        android:text="Time still: "
+        android:text="Seconds still: "
         android:textSize="18sp" />
 
     <Button
