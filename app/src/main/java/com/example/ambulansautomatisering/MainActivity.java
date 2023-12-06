@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private void requestActivityTransitionPermission(){
         EasyPermissions.requestPermissions(
                 this,
-                "You need to allow activity tranisiton permissions in order to use this feature",
+                "You need to allow activity transisiton permissions in order to use this feature",
                 REQUEST_ACTIVITY_TRANSITION,
                 Manifest.permission.ACTIVITY_RECOGNITION
         );
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         simpleSwitch.setChecked(true);
         requestForUpdates();
     }
-    @RequiresApi(Build.VERSION_CODES.Q)
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms){
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
@@ -250,8 +250,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 this,
                 REQUEST_ACTIVITY_TRANSITION_RECEIVER,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
+                PendingIntent.FLAG_IMMUTABLE        );
     }
     ActivityTransitionRequest getTransitionRequest() {
         List transitions = new ArrayList<>();
