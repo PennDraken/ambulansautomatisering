@@ -383,6 +383,16 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+        /* Time stamp 2 */
+        // TODO Arrived at patient. Check if back in original position and take value from ActivityTransitionReceiver.java
+        // Use method getTime to find probable time of arrival to patient
+        else if (!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
+            timeStampManager.setTime(2, currentDate);
+            // Update the TextView with the new location
+            String locationText = "Arrived at patient";
+            TextView locationTextView = findViewById(R.id.locationTextView);
+            locationTextView.setText(locationText);
+        }
 
         /* Time stamp 3 */
         else if (isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/) {
