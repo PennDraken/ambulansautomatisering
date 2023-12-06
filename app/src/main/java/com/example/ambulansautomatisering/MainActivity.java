@@ -188,11 +188,11 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         for (int prev_i = 0; prev_i < timeArray.size()-1; prev_i++) {
             Tuple prev_tuple = timeArray.get(prev_i);
             long prev_time = (long) prev_tuple.getA();
-            for (int curr_i = 0; curr_i < timeArray.size(); curr_i++) {
+            for (int curr_i = 1; curr_i < timeArray.size(); curr_i++) {
                 // We go through all elements and find the value with the longest timespan spent still
                 Tuple curr_tuple = timeArray.get(curr_i);
-                String curr_activity = (String) curr_tuple.getA();
-                long curr_time = (long) curr_tuple.getB();
+                String curr_activity = (String) curr_tuple.getB();
+                long curr_time = (long) curr_tuple.getA();
                 long deltaTime = curr_time - prev_time;
                 if (curr_activity == "STILL" && deltaTime > maxTimeIdle) {
                     maxTimeIdle = deltaTime;
@@ -205,15 +205,20 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     public Boolean testGetSeconds() {
         List<Tuple> testTuple = new ArrayList<>();
-        testTuple.add(new Tuple(0, "WALKING"));
-        testTuple.add(new Tuple(45, "WALKING"));
-        testTuple.add(new Tuple(150, "IDLE"));
-        testTuple.add(new Tuple(30, "WALKING"));
-        testTuple.add(new Tuple(900, "IDLE"));
-        testTuple.add(new Tuple(1100, "WALKING"));
-        testTuple.add(new Tuple(1500, "IDLE"));
-        testTuple.add(new Tuple(1700, "WALKING"));
+        testTuple.add(new Tuple((long)0, "WALKING"));
+        testTuple.add(new Tuple((long)45, "STILL"));
+        testTuple.add(new Tuple((long)150, "WALKING"));
         long time = getSeconds(testTuple);
+        testTuple = new ArrayList<>();
+        testTuple.add(new Tuple((long)0, "WALKING"));
+        testTuple.add(new Tuple((long)45, "WALKING"));
+        testTuple.add(new Tuple((long)150, "STILL"));
+        testTuple.add(new Tuple((long)30, "WALKING"));
+        testTuple.add(new Tuple((long)900, "STILL"));
+        testTuple.add(new Tuple((long)1100, "WALKING"));
+        testTuple.add(new Tuple((long)1500, "STILL"));
+        testTuple.add(new Tuple((long)1700, "WALKING"));
+        time = getSeconds(testTuple);
         return true;
     }
 
