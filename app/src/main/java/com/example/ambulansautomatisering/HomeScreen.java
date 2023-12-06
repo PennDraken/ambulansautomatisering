@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,15 +17,9 @@ public class HomeScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_screen);
 
-        // Lägg till en knapp för att simulera ett meddelande
-        Button simulateMessageButton = findViewById(R.id.simulateMessageButton);
-        simulateMessageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Simulera att du har fått ett meddelande
-                showConfirmationDialog();
-            }
-        });
+        // Schedule the popup to be shown after a delay (e.g., 5000 milliseconds or 5 seconds)
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(this::showConfirmationDialog, 5000);
     }
 
     // Variabel för att hålla dialogobjektet globalt

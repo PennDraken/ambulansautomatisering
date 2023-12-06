@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     }
 
 
-
     /* Remove? since we want to use the app in the back ground. */
     @Override
     // This is when activity loses focus
