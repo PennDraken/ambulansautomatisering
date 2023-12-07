@@ -32,12 +32,18 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_adress;
 
 
-    private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
-    private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
+    // private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
+    private final Tuple ambulance_station = new Tuple(57.6897, 11.9781);// Hörsalsvägen 5, 412 58 Göteborg, Sweden. GENVÄGEN VID FYRVÄGSKORSNING BIBLIOTEK
+    //private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
+
+    private final Tuple hospital_pos = new Tuple(57.6875, 11.9783); // Rännvägen 6b, 412 58 Göteborg, Sweden. BASEN
+
+
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
-    private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
+    // private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
+    private final Tuple patient_position = new Tuple(57.6878, 11.9800);// Hörsalsvägen 11, 412 58 Göteborg, Sweden. KLÄTTERLABBET ISCH
 
 
 
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // declares our timeStampManager
         // we need to input our buttons we want to link as an array
@@ -61,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         buttons[5] = findViewById(R.id.buttonTimeStamp6);
         timeStampManager = new TimeStampManager(buttons);
         locationHelper = new LocationHelper(this, this);
+
 
         // This is so the user can change the times of events (in case they were registered wrong)
         for (int i=0;i<buttons.length;i++) {
@@ -90,6 +98,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 }
             });
         }
+
+        //we've "kvitterat" now set first time stamp.
+        java.util.Date currentDate = new java.util.Date();
+        timeStampManager.setTime(0, currentDate);
 
 
         // Makes our "tidsnotera" button clickable (links function onClick() below to onCLick event)
@@ -161,16 +173,18 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
          change to "kvittering"? */
         /* Time stamp 0 */
-        if(isLocationOutsideThreshold(current, ambulance_station, 100) && !timeStampManager.isTimeStampChecked(0)) { /* Check if this is the correct time stamp*/
+        /*
+        if(isLocationOutsideThreshold(current, ambulance_station, 15) && !timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
             String locationText = "Left station";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
+        */
 
         /* Time stamp 1 */
-        else if(!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
+        if(!isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
             String locationText = "Arrived at patient address";
@@ -179,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 3 */
-        else if(isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
+        else if(isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
             timeStampManager.setTime(3, currentDate);
             // Update the TextView with the new location
             String locationText = "Left patient address";
@@ -188,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 4 */
-        else if(!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
+        else if(!isLocationOutsideThreshold(current, hospital_pos, 15) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
             Button buttonSetTime = findViewById(R.id.buttonSetTime);
             buttonSetTime.setEnabled(true);
 
