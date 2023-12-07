@@ -17,9 +17,6 @@ import java.util.ArrayList;
 
 public class ActivityTransitionReceiver extends BroadcastReceiver {
     public static final int WALKING = 3;
-    private Tuple timeForStandingStill;
-    private ArrayList<Tuple> listOfTimeForStandingStill = new ArrayList<Tuple>();
-
 
     @Override
     public void onReceive(Context context, Intent intent){
@@ -28,6 +25,10 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
             ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
             for (ActivityTransitionEvent event : result.getTransitionEvents()) {
                 if(event.getActivityType() == WALKING){
+
+                    //atm vid start, om den går till transition exit innan enter så
+                    //hinner inte startTime sättas
+
                     if(event.getTransitionType() == ACTIVITY_TRANSITION_ENTER){
                         //"send" methods to the main instance
                         MainActivity.getInstace().setStartTime();

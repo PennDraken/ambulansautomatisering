@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private long standingStillEndTime = 0;
 
     private long standingStillTime = 0;
+    private ArrayList<Tuple> listOfTimeForStandingStill = new ArrayList<Tuple>();
 
 
     @Override
@@ -250,7 +251,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 this,
                 REQUEST_ACTIVITY_TRANSITION_RECEIVER,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE        );
+                //Try flag depending on Android version (eller något sånt)
+                //PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
     ActivityTransitionRequest getTransitionRequest() {
         List transitions = new ArrayList<>();
@@ -380,6 +383,19 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     }
 
     public long getStandingStillTime() {
-        return standingStillTime = (standingStillEndTime - standingStillStartTime) / 1000;
+        standingStillTime = (standingStillEndTime - standingStillStartTime) / 1000;
+
+        //spara något annat än standingStillStarTime (System.currentTimeMillis) ?
+        //ska användas för att sätta tid för ankomst så java.util.Date currentDate = new java.util.Date(); kanske
+        Tuple timeForStandingStill = new Tuple(standingStillStartTime, standingStillTime);
+        listOfTimeForStandingStill.add(timeForStandingStill);
+
+        //test print tuple to see values are working correctly
+        //when we leave for the destination we get the max standingStillTime of the tuple
+        //and set the corresponding standingStillStartTime (java Date?) as arrived to patient time
+        Tuple test = listOfTimeForStandingStill.get(listOfTimeForStandingStill.size() - 1);
+        Log.d("asd", test.toString());
+
+        return standingStillTime;
     }
 }
