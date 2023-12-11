@@ -20,7 +20,7 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
         // This is called when user has changed activity type
-        if (ActivityTransitionResult.hasResult(intent)) {
+        if (ActivityTransitionResult.hasResult(intent) && !MainActivity.timeStampManager.isTimeStampChecked(3)) {
             ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
             for (ActivityTransitionEvent event : result.getTransitionEvents()) {
                 // Do something useful here...
@@ -28,7 +28,7 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
                         + " - " + ActivityTransitionUtil.toTransitionType(event.getTransitionType()));
                 try {
                     MainActivity.getInstace().updateTheTextView(ActivityTransitionUtil.toActivityString(event.getActivityType()));
-                    timeArray.add(new Tuple(System.currentTimeMillis()-timeStarted, ActivityTransitionUtil.toActivityString(event.getActivityType())));
+                    timeArray.add(new Tuple(System.currentTimeMillis() - timeStarted, ActivityTransitionUtil.toActivityString(event.getActivityType())));
                 } catch (Exception e) {
 
                 }
@@ -42,6 +42,10 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
                 }
 
                 // Check if driving and has walked (we are probably driving away from the patient address)
+                if (ActivityTransitionUtil.toActivityString(event.getActivityType()) == "IN_VEHICLE") {
+                    // Update left patient address to current time
+                    MainActivity.timeStampManager.setTime(3, new java.util.Date());
+                }
             }
         }
     }
