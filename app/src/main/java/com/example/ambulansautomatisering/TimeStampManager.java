@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class TimeStampManager {
     // Stores the dates and times of our different time stamps
     private Date[] timeStamps = new Date[6];
-    private Button[] buttons ;
+    private Button[] buttons;
 
 
     // Constructor (insert buttons which you want to set)
@@ -50,7 +50,7 @@ public class TimeStampManager {
                 String current_time = sdf.format(date);
                 buttons[i].setText(current_time);
             } else {
-                buttons[i].setText("--:--");
+                buttons[i].setText("--:--:--");
             }
         }
     }

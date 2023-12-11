@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationHelper.startLocationUpdates();
         }
 
-        testGetSeconds();
+        // testGetSeconds();
     }
     public static MainActivity  getInstace(){
         return ins;
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 String curr_activity = (String) curr_tuple.getB();
                 long curr_time = (long) curr_tuple.getA();
                 long deltaTime = curr_time - prev_time;
-                if (curr_activity == "STILL" && deltaTime > maxTimeIdle) {
+                if (curr_activity.equals("STILL") && deltaTime > maxTimeIdle) {
                     maxTimeIdle = deltaTime;
                     timeEnteredIdle = curr_time;
                 }
