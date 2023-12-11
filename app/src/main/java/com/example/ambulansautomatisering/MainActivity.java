@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
     private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
 
-    private TimeStampManager timeStampManager; // handles our timestamps
+    public static TimeStampManager timeStampManager; // handles our timestamps
     private Switch simpleSwitch;
     private TextView test;
     private TextView test2;
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         client = ActivityRecognition.getClient(this);
         test = findViewById(R.id.txt_activity);
 
+        // Enables UI switch to toggle activityType gathering
         simpleSwitch = findViewById(R.id.simpleSwitch);
         simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     }
 
     // Gets how many seconds has passed since activity started
-    public long getSeconds(List<Tuple> timeArray) {
+    public static long getSeconds(List<Tuple> timeArray) {
         long timeEnteredIdle = 0;
         long maxTimeIdle = 0;
         // We need to find the value with the longest time spent idle
@@ -375,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             locationTextView.setText(locationText);
         }
 
+        // Arrived at patient address
         /* Time stamp 1 */
         else if (!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
@@ -382,26 +384,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             String locationText = "Arrived at patient address";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
-        }
-        /* Time stamp 2 */
-        // TODO Arrived at patient. Check if back in original position and take value from ActivityTransitionReceiver.java
-        // Use method getTime to find probable time of arrival to patient
-        else if (!isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
-            timeStampManager.setTime(2, currentDate);
-            // Update the TextView with the new location
-            String locationText = "Arrived at patient";
-            TextView locationTextView = findViewById(R.id.locationTextView);
-            locationTextView.setText(locationText);
+            // TODO start activityType listener
         }
 
-        /* Time stamp 3 */
-        else if (isLocationOutsideThreshold(current, patient_position, 100) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/) {
-            timeStampManager.setTime(3, currentDate);
-            // Update the TextView with the new location
-            String locationText = "Left patient address";
-            TextView locationTextView = findViewById(R.id.locationTextView);
-            locationTextView.setText(locationText);
-        }
 
         /* Time stamp 4 */
         else if (!isLocationOutsideThreshold(current, hospital_pos, 100) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)) {

@@ -31,6 +31,10 @@ public class TimeStampManager {
         updateUI();
     }
 
+    public Date getTime(int timeStampIndex) {
+        return this.timeStamps[timeStampIndex];
+    }
+
     // Sets a specific timeStamp to a time
     public void setTime(int timeStampIndex, Date timeToSet) {
         timeStamps[timeStampIndex] = timeToSet;

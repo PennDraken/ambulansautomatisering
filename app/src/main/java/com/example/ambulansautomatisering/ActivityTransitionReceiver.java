@@ -10,6 +10,7 @@ import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ActivityTransitionReceiver extends BroadcastReceiver {
@@ -18,7 +19,7 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent){
-        // This is called when user is walking
+        // This is called when user has changed activity type
         if (ActivityTransitionResult.hasResult(intent)) {
             ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
             for (ActivityTransitionEvent event : result.getTransitionEvents()) {
@@ -31,6 +32,16 @@ public class ActivityTransitionReceiver extends BroadcastReceiver {
                 } catch (Exception e) {
 
                 }
+                // Update estimated time of meeting patient
+                if (timeArray.size()!=0) {
+                    // Get old date from timeStamp 1 (arrived at patient address) and add seconds to find estimated walk time
+                    Date currentDate = MainActivity.timeStampManager.getTime(1);
+                    long seconds = MainActivity.getSeconds(timeArray);
+                    currentDate.setTime(currentDate.getTime() + seconds);
+                    MainActivity.timeStampManager.setTime(2, currentDate);
+                }
+
+                // Check if driving and has walked (we are probably driving away from the patient address)
             }
         }
     }
