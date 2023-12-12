@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         buttons[3] = findViewById(R.id.buttonTimeStamp4);
         buttons[4] = findViewById(R.id.buttonTimeStamp5);
         buttons[5] = findViewById(R.id.buttonTimeStamp6);
-        timeStampManager = new TimeStampManager(buttons);
+        Button saveButton = findViewById(R.id.buttonSetTime);
+        timeStampManager = new TimeStampManager(buttons, saveButton);
         locationHelper = new LocationHelper(this, this);
 
         // This is so the user can change the times of events (in case they were registered wrong)
@@ -97,12 +98,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 }
             });
         }
-
         // we've "kvitterat" now set first time stamp.
         // java.util.Date currentDate = new java.util.Date();
         // timeStampManager.setTime(0, currentDate);
-
-
         // Makes our "tidsnotera" button clickable (links function onClick() below to onCLick event)
         Button buttonSetTime = findViewById(R.id.buttonSetTime);
         buttonSetTime.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             }
         });
         buttonSetTime.setEnabled(false);
-
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -203,8 +200,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         /* Time stamp 4 */
         else if(!isLocationOutsideThreshold(current, hospital_pos, 15) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
             Button buttonSetTime = findViewById(R.id.buttonSetTime);
-            buttonSetTime.setEnabled(true);
-
+            buttonSetTime.setEnabled(true); // Note: this only gets updated if GPS fills in the last coordinate
             // Save in external excel/txt?
             timeStampManager.setTime(4, currentDate);
             // Update the TextView with the new location
