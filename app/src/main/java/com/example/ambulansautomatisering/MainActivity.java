@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         if(!isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
-            String locationText = "Framme hos patientaddress";
+            String locationText = "Fram hos patientaddress";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
