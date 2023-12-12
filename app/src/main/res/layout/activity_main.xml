@@ -82,42 +82,42 @@
             android:id="@+id/buttonTimeStamp1"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="--:--" />
+            android:text="--:--:--" />
 
         <!-- Button 2 -->
         <Button
             android:id="@+id/buttonTimeStamp2"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="--:--" />
+            android:text="--:--:--" />
 
         <!-- Button 3 -->
         <Button
             android:id="@+id/buttonTimeStamp3"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="--:--" />
+            android:text="--:--:--" />
 
         <!-- Button 4 -->
         <Button
             android:id="@+id/buttonTimeStamp4"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="--:--" />
+            android:text="--:--:--" />
 
         <!-- Button 5 -->
         <Button
             android:id="@+id/buttonTimeStamp5"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="--:--" />
+            android:text="--:--:--" />
 
         <!-- Button 6 -->
         <Button
             android:id="@+id/buttonTimeStamp6"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="--:--" />
+            android:text="--:--:--" />
     </LinearLayout>
 
 

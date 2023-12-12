@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
 
 
     // private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
-    private final Tuple ambulance_station = new Tuple(57.6897, 11.9781);// Hörsalsvägen 5, 412 58 Göteborg, Sweden. GENVÄGEN VID FYRVÄGSKORSNING BIBLIOTEK
+    private Tuple ambulance_station = null;// Hörsalsvägen 5, 412 58 Göteborg, Sweden. GENVÄGEN VID FYRVÄGSKORSNING BIBLIOTEK
     //private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
 
     private final Tuple hospital_pos = new Tuple(57.6875, 11.9783); // Rännvägen 6b, 412 58 Göteborg, Sweden. BASEN
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         timeStampManager = new TimeStampManager(buttons);
         locationHelper = new LocationHelper(this, this);
 
-
         // This is so the user can change the times of events (in case they were registered wrong)
         for (int i=0;i<buttons.length;i++) {
             final int index = i;
@@ -100,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         //we've "kvitterat" now set first time stamp.
-        java.util.Date currentDate = new java.util.Date();
-        timeStampManager.setTime(0, currentDate);
+        // java.util.Date currentDate = new java.util.Date();
+        // timeStampManager.setTime(0, currentDate);
 
 
         // Makes our "tidsnotera" button clickable (links function onClick() below to onCLick event)
@@ -154,13 +153,12 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     }
 
 
-
+    // onLocationChanged gets run at startup
     @Override
     public void onLocationChanged(Location location) {
         // Handle the updated location here
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
-
         Tuple current = new Tuple(latitude, longitude);
 
         // Get current date, time and time zone.
@@ -169,11 +167,13 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String formattedDate = sdf.format(currentDate);
 
+        // This is to initialize our starting position
+        if (ambulance_station == null) {
+            ambulance_station = new Tuple(latitude, longitude);
+            return; // Early return
+        }
 
-        /* Location outside 100m? then we've left ambulance station, this time stamp may be redundant.
-         change to "kvittering"? */
         /* Time stamp 0 */
-        /*
         if(isLocationOutsideThreshold(current, ambulance_station, 15) && !timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
@@ -181,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
-        */
 
         /* Time stamp 1 */
         if(!isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
