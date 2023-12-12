@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
@@ -16,15 +17,20 @@ import com.google.android.gms.location.DetectedActivity;
 import java.util.ArrayList;
 
 public class ActivityTransitionReceiver extends BroadcastReceiver {
-    public static final int WALKING = 3;
+    public static final int STILL = 3;
 
     @Override
     public void onReceive(Context context, Intent intent){
 
         if (ActivityTransitionResult.hasResult(intent)) {
             ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
+            ActivityRecognitionResult h = ActivityRecognitionResult.extractResult(intent);
+            int b = h.getActivityConfidence(STILL);
             for (ActivityTransitionEvent event : result.getTransitionEvents()) {
-                if(event.getActivityType() == WALKING){
+                if(event.getActivityType() == STILL){
+                    
+                    Log.d("asd", "" + b);
+
 
                     //atm vid start, om den går till transition exit innan enter så
                     //hinner inte startTime sättas
