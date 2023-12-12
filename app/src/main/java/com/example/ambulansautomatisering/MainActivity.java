@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             });
         }
 
-        //we've "kvitterat" now set first time stamp.
+        // we've "kvitterat" now set first time stamp.
         // java.util.Date currentDate = new java.util.Date();
         // timeStampManager.setTime(0, currentDate);
 
