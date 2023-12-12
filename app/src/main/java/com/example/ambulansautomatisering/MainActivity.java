@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         if(isLocationOutsideThreshold(current, ambulance_station, 15) && !timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(0, currentDate);
             // Update the TextView with the new location
-            String locationText = "Left station";
+            String locationText = "På väg mot hämtplats";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         if(!isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
-            String locationText = "Arrived at patient address";
+            String locationText = "Framme hos patientaddress";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         else if(isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
             timeStampManager.setTime(3, currentDate);
             // Update the TextView with the new location
-            String locationText = "Left patient address";
+            String locationText = "Lämnat patientaddress";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             // Save in external excel/txt?
             timeStampManager.setTime(4, currentDate);
             // Update the TextView with the new location
-            String locationText = "Arrived at hospital";
+            String locationText = "Framme vid sjukhus";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
