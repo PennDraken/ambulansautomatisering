@@ -46,7 +46,7 @@ public class TimeStampManager {
                 String current_time = sdf.format(date);
                 buttons[i].setText(current_time);
             } else {
-                buttons[i].setText("--:--");
+                buttons[i].setText("--:--:--");
             }
         }
     }
