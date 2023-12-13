@@ -1,4 +1,6 @@
 package com.example.ambulansautomatisering;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.widget.Button;
 
 import java.text.SimpleDateFormat;
@@ -12,12 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 // Used to abstract away the implementation of handling timestamps
 public class TimeStampManager {
     // Stores the dates and times of our different time stamps
-    private Date[] timeStamps = new Date[6];
+    public Date[] timeStamps = new Date[6];
     private Button[] buttons ;
     private Button saveButton;
+    private Context context;
 
     // Constructor (insert buttons which you want to set)
-    public TimeStampManager(Button[] buttons, Button saveButton) {
+    public TimeStampManager(Context context, Button[] buttons, Button saveButton) {
+        this.context = context;
         this.buttons = buttons;
         this.saveButton = saveButton;
     }
@@ -52,7 +56,8 @@ public class TimeStampManager {
                 buttons[i].setText("--:--:--");
             }
         }
-        if (timeStampsFilled()) {
+        if (isTimeStampChecked(4)) {
+            // Show popup dialog
             saveButton.setEnabled(true);
         }
     }
@@ -77,6 +82,20 @@ public class TimeStampManager {
         this.timeStamps = new Date[6];
     }
 
+    // Summarises the results of the timeStamps into a string to be printed
+    public String toString() {
+        return "\nPå väg mot patient: "+tsF(timeStamps[0])+"\nAnkomst hämtplats: "+tsF(timeStamps[1])+"\nAnkomst patient: "+tsF(timeStamps[2])+"\nAvfärd hämtplats: "+tsF(timeStamps[3])+"\nAnkomst destination: "+tsF(timeStamps[4])+"\nÖverlämning: "+tsF(timeStamps[5]);
+    }
+
+    // TimeStamp format (solves null errors)
+    private String tsF(Date timeStamp) {
+        if (timeStamp==null) {
+            return "--:--:--";
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            return sdf.format(timeStamp);
+        }
+    }
     // Saves the dates to a file and resets the UI
     public void save() {
         // TODO not implemented yet

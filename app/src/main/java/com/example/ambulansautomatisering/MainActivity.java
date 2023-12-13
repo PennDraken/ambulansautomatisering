@@ -31,24 +31,17 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     private Date dt_overl;
     private Date dt_adress;
 
-
     // private final Tuple ambulance_station = new Tuple(57.7056, 11.8876); // Ruskvädersgatan 10, 418 34 Göteborg, Sweden
     private Tuple ambulance_station = null;// Hörsalsvägen 5, 412 58 Göteborg, Sweden. GENVÄGEN VID FYRVÄGSKORSNING BIBLIOTEK
     //private final Tuple hospital_pos = new Tuple(57.7219, 12.0498); // östra sjukhuset
-
-    private final Tuple hospital_pos = new Tuple(57.6875, 11.9783); // Rännvägen 6b, 412 58 Göteborg, Sweden. BASEN
-
-
+    private final Tuple hospital_pos = new Tuple(57.722, 12.0498); // östra sjukhuset
     // patient pos == null island 10
     //private double[] patient_position = {6.8155, -5.2549};  // Read from terminal to simulate message from SOS?
 
     // private final Tuple patient_position = new Tuple(57.6814, 11.9105); // Sven Brolids Väg 9
-    private final Tuple patient_position = new Tuple(57.6878, 11.9800);// Hörsalsvägen 11, 412 58 Göteborg, Sweden. KLÄTTERLABBET ISCH
-
-
+    private final Tuple patient_position = new Tuple(57.723, 12.0227); // Ullevi
 
     private TimeStampManager timeStampManager; // handles our timestamps
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         buttons[4] = findViewById(R.id.buttonTimeStamp5);
         buttons[5] = findViewById(R.id.buttonTimeStamp6);
         Button saveButton = findViewById(R.id.buttonSetTime);
-        timeStampManager = new TimeStampManager(buttons, saveButton);
+        timeStampManager = new TimeStampManager(this, buttons, saveButton);
         locationHelper = new LocationHelper(this, this);
 
         // This is so the user can change the times of events (in case they were registered wrong)
@@ -110,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 // Get current date, time and time zone.
                 java.util.Date currentDate = new java.util.Date();
                 timeStampManager.setTime(5,currentDate);
+                showResult();
             }
         });
         buttonSetTime.setEnabled(false);
@@ -132,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         return distanceInMeters > threshold;
     }
 
-
     @Override
     // This is when activity is reopened
     protected void onResume() {
@@ -140,6 +133,14 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         locationHelper.startLocationUpdates();
     }
 
+    public void showResult() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Uppdrag Slutfört");
+        builder.setMessage(timeStampManager.toString());
+        // Skapa och visa AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     /* Remove? since we want to use the app in the back ground. */
     @Override
@@ -148,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         super.onPause();
         locationHelper.stopLocationUpdates();
     }
-
 
     // onLocationChanged gets run at startup
     @Override
@@ -180,16 +180,16 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 1 */
-        if(!isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
+        if(!isLocationOutsideThreshold(current, patient_position, 50) && !timeStampManager.isTimeStampChecked(1) && timeStampManager.isTimeStampChecked(0)) {
             timeStampManager.setTime(1, currentDate);
             // Update the TextView with the new location
-            String locationText = "Fram hos patientaddress";
+            String locationText = "Framme hos patientaddress";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
         }
 
         /* Time stamp 3 */
-        else if(isLocationOutsideThreshold(current, patient_position, 15) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
+        else if(isLocationOutsideThreshold(current, patient_position, 50) && !timeStampManager.isTimeStampChecked(3) && timeStampManager.isTimeStampChecked(1) /* ändra till index 2*/ ) {
             timeStampManager.setTime(3, currentDate);
             // Update the TextView with the new location
             String locationText = "Lämnat patientaddress";
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         }
 
         /* Time stamp 4 */
-        else if(!isLocationOutsideThreshold(current, hospital_pos, 15) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
+        else if(!isLocationOutsideThreshold(current, hospital_pos, 50) && !timeStampManager.isTimeStampChecked(4) && timeStampManager.isTimeStampChecked(3)){
             Button buttonSetTime = findViewById(R.id.buttonSetTime);
             buttonSetTime.setEnabled(true); // Note: this only gets updated if GPS fills in the last coordinate
             // Save in external excel/txt?
@@ -207,6 +207,10 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             String locationText = "Framme vid sjukhus";
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
+            // Show popup dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Kvittera uppdrag");
+            builder.setMessage("Vill du kvittera uppdraget?");
         }
     }
 }
