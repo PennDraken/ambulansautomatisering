@@ -135,14 +135,6 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     }
 
     public void completeMission() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Uppdrag Slutfört");
-        builder.setMessage(timeStampManager.toString());
-        // Visa ruttinfo
-        // AlertDialog dialog = builder.create();
-        // dialog.show();
-        // Send timeStamps to homeScreen
-        // Go back to home screen
         Intent intent = new Intent();
         intent.putExtra("MissionData", timeStampManager);
         setResult(RESULT_OK, intent);

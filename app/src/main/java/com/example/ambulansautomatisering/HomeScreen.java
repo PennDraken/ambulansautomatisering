@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import kotlinx.coroutines.channels.Send;
+
 public class HomeScreen extends AppCompatActivity {
     // Used to store our different completed missions
     private static List<TimeStampManager> completedMissions = new ArrayList<>();
@@ -40,6 +42,14 @@ public class HomeScreen extends AppCompatActivity {
         updateUI();
     }
 
+    public void showMission(TimeStampManager mission) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Uppdrag Slutfört");
+        builder.setMessage(mission.toString());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -55,14 +65,22 @@ public class HomeScreen extends AppCompatActivity {
 
     // Shows completed missions in the UI
     private void updateUI() {
+        // Get linearLayout which we will be adding our buttons too
+        LinearLayout layout = (LinearLayout) findViewById(R.id.missionsLayout);
+        layout.removeAllViews();
         for (TimeStampManager mission : completedMissions) {
             if (mission!=null) {
-                // Get linearLayout which we will be adding our buttons too
-                LinearLayout layout = (LinearLayout) findViewById(R.id.missionsLayout);
                 // Sets the properties for each button
                 Button btnTag = new Button(this);
                 btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 btnTag.setText(mission.toTitleString());
+                btnTag.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Call the showMission() method when the button is clicked
+                        showMission(mission);
+                    }
+                });
                 // Shows the button in the UI
                 layout.addView(btnTag);
             }
