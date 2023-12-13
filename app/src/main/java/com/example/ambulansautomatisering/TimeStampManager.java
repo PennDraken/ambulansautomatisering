@@ -33,7 +33,7 @@ public class TimeStampManager implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeArray(timeStamps);
+        dest.writeSerializable(timeStamps);
         dest.writeLong(startDate != null ? startDate.getTime() : -1);
         dest.writeLong(endDate != null ? endDate.getTime() : -1);
     }
@@ -52,7 +52,7 @@ public class TimeStampManager implements Parcelable {
 
     // Constructor that reads from Parcel
     private TimeStampManager(Parcel in) {
-        in.readArray(Date.class.getClassLoader());
+        timeStamps = (Date[]) in.readSerializable();
         long startDateMillis = in.readLong();
         startDate = startDateMillis != -1 ? new Date(startDateMillis) : null;
         long endDateMillis = in.readLong();
