@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
                 // Get current date, time and time zone.
                 java.util.Date currentDate = new java.util.Date();
                 timeStampManager.setTime(5,currentDate);
-                showResult();
+                completeMission();
             }
         });
         buttonSetTime.setEnabled(false);
@@ -133,13 +133,19 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
         locationHelper.startLocationUpdates();
     }
 
-    public void showResult() {
+    public void completeMission() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Uppdrag Slutfört");
         builder.setMessage(timeStampManager.toString());
-        // Skapa och visa AlertDialog
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        // Visa ruttinfo
+        // AlertDialog dialog = builder.create();
+        // dialog.show();
+        // Send timeStamps to homeScreen
+        // Go back to home screen
+        Intent intent = new Intent();
+        intent.putExtra("MissionData", timeStampManager);
+        setResult(RESULT_OK, intent);
+        finish(); // Go back to home-screen activity
     }
 
     /* Remove? since we want to use the app in the back ground. */
@@ -208,9 +214,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             TextView locationTextView = findViewById(R.id.locationTextView);
             locationTextView.setText(locationText);
             // Show popup dialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Kvittera uppdrag");
-            builder.setMessage("Vill du kvittera uppdraget?");
+            completeMission();
         }
     }
 }

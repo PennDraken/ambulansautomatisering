@@ -1,21 +1,17 @@
 package com.example.ambulansautomatisering;
-import android.app.AlertDialog;
+
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.widget.Button;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.function.BooleanSupplier;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-// This class handles setting our timestamps
-// Used to abstract away the implementation of handling timestamps
-public class TimeStampManager {
-    // Stores the dates and times of our different time stamps
+public class TimeStampManager implements Parcelable {
     public Date[] timeStamps = new Date[6];
-    private Button[] buttons ;
+    private Button[] buttons;
     private Button saveButton;
     private Context context;
 
@@ -26,13 +22,41 @@ public class TimeStampManager {
         this.saveButton = saveButton;
     }
 
+    // Parcelable implementation
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeArray(timeStamps);
+    }
+
+    public static final Parcelable.Creator<TimeStampManager> CREATOR = new Parcelable.Creator<TimeStampManager>() {
+        @Override
+        public TimeStampManager createFromParcel(Parcel in) {
+            return new TimeStampManager(in);
+        }
+
+        @Override
+        public TimeStampManager[] newArray(int size) {
+            return new TimeStampManager[size];
+        }
+    };
+
+    // Constructor that reads from Parcel
+    private TimeStampManager(Parcel in) {
+        in.readArray(Date.class.getClassLoader());
+    }
+
     // Sets the most recent undefined timeStamp text to current time
     public void setTime(Date timeToSet) {
-        for (int i=0;i<timeStamps.length;i++) {
+        for (int i = 0; i < timeStamps.length; i++) {
             Date date = timeStamps[i];
             if (date == null) {
                 timeStamps[i] = timeToSet;
-                break; // Break because we set the time wanted to set
+                break;
             }
         }
         updateUI();
@@ -46,9 +70,9 @@ public class TimeStampManager {
 
     // Updates the UI so text corresponds to our timeStamps
     public void updateUI() {
-        for (int i=0;i<timeStamps.length;i++) {
+        for (int i = 0; i < timeStamps.length; i++) {
             Date date = timeStamps[i];
-            if (date!=null) {
+            if (date != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
                 String current_time = sdf.format(date);
                 buttons[i].setText(current_time);
@@ -70,11 +94,11 @@ public class TimeStampManager {
     public Boolean timeStampsFilled() {
         int count = 0;
         for (Date stamp : this.timeStamps) {
-            if (stamp!=null) {
-                count+=1;
+            if (stamp != null) {
+                count += 1;
             }
         }
-        return count==this.timeStamps.length;
+        return count == this.timeStamps.length;
     }
 
     // Resets all timeStamps and updates UI
@@ -82,20 +106,21 @@ public class TimeStampManager {
         this.timeStamps = new Date[6];
     }
 
-    // Summarises the results of the timeStamps into a string to be printed
+    // Summarizes the results of the timeStamps into a string to be printed
     public String toString() {
-        return "\nPå väg mot patient: "+tsF(timeStamps[0])+"\nAnkomst hämtplats: "+tsF(timeStamps[1])+"\nAnkomst patient: "+tsF(timeStamps[2])+"\nAvfärd hämtplats: "+tsF(timeStamps[3])+"\nAnkomst destination: "+tsF(timeStamps[4])+"\nÖverlämning: "+tsF(timeStamps[5]);
+        return "\nPå väg mot patient: " + tsF(timeStamps[0]) + "\nAnkomst hämtplats: " + tsF(timeStamps[1]) + "\nAnkomst patient: " + tsF(timeStamps[2]) + "\nAvfärd hämtplats: " + tsF(timeStamps[3]) + "\nAnkomst destination: " + tsF(timeStamps[4]) + "\nÖverlämning: " + tsF(timeStamps[5]);
     }
 
     // TimeStamp format (solves null errors)
     private String tsF(Date timeStamp) {
-        if (timeStamp==null) {
+        if (timeStamp == null) {
             return "--:--:--";
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             return sdf.format(timeStamp);
         }
     }
+
     // Saves the dates to a file and resets the UI
     public void save() {
         // TODO not implemented yet

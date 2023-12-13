@@ -8,9 +8,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeScreen extends AppCompatActivity {
+    // Used to store our different completed missions
+    private static List<TimeStampManager> completedMissions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +27,34 @@ public class HomeScreen extends AppCompatActivity {
 
         // Schedule the popup to be shown after a delay (e.g., 5000 milliseconds or 5 seconds)
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(this::showConfirmationDialog, 5000);
+        handler.postDelayed(this::showConfirmationDialog, 1000); // TODO
+    }
+
+    // Adds a completed mission to the homescreen
+    public void saveMission(TimeStampManager mission) {
+        completedMissions.add(mission);
+        // update UI
+        updateUI();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    TimeStampManager completedMission = data.getParcelableExtra("MissionData");
+                    
+                }
+            }
+        }
+    }
+
+    // Shows completed missions in the UI
+    private void updateUI() {
+        for (TimeStampManager mission : completedMissions) {
+            // LinearLayout linearLayout = (LinearLayout)findViewById(R.id.info);
+        }
     }
 
     // Variabel för att hålla dialogobjektet globalt
@@ -31,8 +66,8 @@ public class HomeScreen extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         // Ställ in titel och meddelande
-        builder.setTitle("Kvittera uppdrag");
-        builder.setMessage("Vill du kvittera uppdraget?");
+        builder.setTitle("Nytt uppdrag");
+        builder.setMessage("Person har ramlat utanför Ica Kvantum Munkebäck. \nVill du acceptera uppdraget?");
 
         // Lägg till knapp för att acceptera (Ja)
         builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
@@ -41,7 +76,7 @@ public class HomeScreen extends AppCompatActivity {
                 // Exempel: visa en toast, spara kvittens i databasen, etc.
 
                 // send "kvittens", update UI
-                startActivity(new Intent(HomeScreen.this, MainActivity.class));
+                startActivityForResult(new Intent(HomeScreen.this, MainActivity.class),1);
             }
         });
 
