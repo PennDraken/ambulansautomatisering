@@ -101,8 +101,9 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
             public void onClick(View v) {
                 // Sets the time of the first non-empty timestamp
                 // Get current date, time and time zone.
-                java.util.Date currentDate = new java.util.Date();
+                java.util.Date currentDate = new Date();
                 timeStampManager.setTime(5,currentDate);
+                timeStampManager.complete(new Date());
                 completeMission();
             }
         });

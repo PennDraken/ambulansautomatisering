@@ -11,12 +11,15 @@ import java.util.Locale;
 
 public class TimeStampManager implements Parcelable {
     public Date[] timeStamps = new Date[6];
+    private Date startDate;
+    private Date endDate;
     private Button[] buttons;
     private Button saveButton;
     private Context context;
 
     // Constructor (insert buttons which you want to set)
     public TimeStampManager(Context context, Button[] buttons, Button saveButton) {
+        this.startDate = new Date();
         this.context = context;
         this.buttons = buttons;
         this.saveButton = saveButton;
@@ -31,6 +34,8 @@ public class TimeStampManager implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeArray(timeStamps);
+        dest.writeLong(startDate != null ? startDate.getTime() : -1);
+        dest.writeLong(endDate != null ? endDate.getTime() : -1);
     }
 
     public static final Parcelable.Creator<TimeStampManager> CREATOR = new Parcelable.Creator<TimeStampManager>() {
@@ -48,6 +53,10 @@ public class TimeStampManager implements Parcelable {
     // Constructor that reads from Parcel
     private TimeStampManager(Parcel in) {
         in.readArray(Date.class.getClassLoader());
+        long startDateMillis = in.readLong();
+        startDate = startDateMillis != -1 ? new Date(startDateMillis) : null;
+        long endDateMillis = in.readLong();
+        endDate = endDateMillis != -1 ? new Date(endDateMillis) : null;
     }
 
     // Sets the most recent undefined timeStamp text to current time
@@ -66,6 +75,11 @@ public class TimeStampManager implements Parcelable {
     public void setTime(int timeStampIndex, Date timeToSet) {
         timeStamps[timeStampIndex] = timeToSet;
         updateUI();
+    }
+
+    // Sets the end value of the timestampmangare
+    public void complete(Date finalDate) {
+        endDate = finalDate;
     }
 
     // Updates the UI so text corresponds to our timeStamps
@@ -101,14 +115,14 @@ public class TimeStampManager implements Parcelable {
         return count == this.timeStamps.length;
     }
 
-    // Resets all timeStamps and updates UI
-    public void reset() {
-        this.timeStamps = new Date[6];
-    }
-
     // Summarizes the results of the timeStamps into a string to be printed
     public String toString() {
-        return "\nPå väg mot patient: " + tsF(timeStamps[0]) + "\nAnkomst hämtplats: " + tsF(timeStamps[1]) + "\nAnkomst patient: " + tsF(timeStamps[2]) + "\nAvfärd hämtplats: " + tsF(timeStamps[3]) + "\nAnkomst destination: " + tsF(timeStamps[4]) + "\nÖverlämning: " + tsF(timeStamps[5]);
+        return "På väg mot patient: " + tsF(timeStamps[0]) + "\nAnkomst hämtplats: " + tsF(timeStamps[1]) + "\nAnkomst patient: " + tsF(timeStamps[2]) + "\nAvfärd hämtplats: " + tsF(timeStamps[3]) + "\nAnkomst destination: " + tsF(timeStamps[4]) + "\nÖverlämning: " + tsF(timeStamps[5]);
+    }
+
+    // Even more brief summary of the timestamps
+    public String toTitleString() {
+        return "Start: " + tsF(this.startDate) + " Slut: " + tsF(this.endDate);
     }
 
     // TimeStamp format (solves null errors)

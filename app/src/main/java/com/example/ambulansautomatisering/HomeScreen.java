@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,8 +14,10 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeScreen extends AppCompatActivity {
     // Used to store our different completed missions
@@ -44,7 +47,7 @@ public class HomeScreen extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
                     TimeStampManager completedMission = data.getParcelableExtra("MissionData");
-                    
+                    saveMission(completedMission);
                 }
             }
         }
@@ -53,7 +56,16 @@ public class HomeScreen extends AppCompatActivity {
     // Shows completed missions in the UI
     private void updateUI() {
         for (TimeStampManager mission : completedMissions) {
-            // LinearLayout linearLayout = (LinearLayout)findViewById(R.id.info);
+            if (mission!=null) {
+                // Get linearLayout which we will be adding our buttons too
+                LinearLayout layout = (LinearLayout) findViewById(R.id.missionsLayout);
+                // Sets the properties for each button
+                Button btnTag = new Button(this);
+                btnTag.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                btnTag.setText(mission.toTitleString());
+                // Shows the button in the UI
+                layout.addView(btnTag);
+            }
         }
     }
 
