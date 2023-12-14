@@ -120,6 +120,17 @@ public class TimeStampManager implements Parcelable {
         return "På väg mot patient: " + tsF(timeStamps[0]) + "\nAnkomst hämtplats: " + tsF(timeStamps[1]) + "\nAnkomst patient: " + tsF(timeStamps[2]) + "\nAvfärd hämtplats: " + tsF(timeStamps[3]) + "\nAnkomst destination: " + tsF(timeStamps[4]) + "\nÖverlämning: " + tsF(timeStamps[5]);
     }
 
+    public String toStringExpanded() {
+        return  "\nTid för start av uppdrag: " + tsFbig(startDate) +
+                "\nPå väg mot patient: " + tsFbig(timeStamps[0]) +
+                "\nAnkomst hämtplats: " + tsFbig(timeStamps[1]) +
+                "\nAnkomst patient: " + tsFbig(timeStamps[2]) +
+                "\nAvfärd hämtplats: " + tsFbig(timeStamps[3]) +
+                "\nAnkomst destination: " + tsFbig(timeStamps[4]) +
+                "\nÖverlämning: " + tsFbig(timeStamps[5]) +
+                "\nTid för uppdrag klart: " + tsFbig(endDate);
+    }
+
     // Even more brief summary of the timestamps
     public String toTitleString() {
         return "Start: " + tsF(this.startDate) + " Slut: " + tsF(this.endDate);
@@ -131,6 +142,15 @@ public class TimeStampManager implements Parcelable {
             return "--:--:--";
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            return sdf.format(timeStamp);
+        }
+    }
+
+    private String tsFbig(Date timeStamp) {
+        if (timeStamp == null) {
+            return "----:--:-- --:--:--";
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss", Locale.getDefault());
             return sdf.format(timeStamp);
         }
     }

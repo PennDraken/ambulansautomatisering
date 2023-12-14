@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,7 @@ public class HomeScreen extends AppCompatActivity {
 
         // Schedule the popup to be shown after a delay (e.g., 5000 milliseconds or 5 seconds)
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(this::showConfirmationDialog, 1000); // TODO
+        handler.postDelayed(this::showConfirmationDialog, 10000); // TODO
     }
 
     // Adds a completed mission to the homescreen
@@ -38,7 +41,7 @@ public class HomeScreen extends AppCompatActivity {
     public void showMission(TimeStampManager mission) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Uppdrag Slutfört");
-        builder.setMessage(mission.toString());
+        builder.setMessage(mission.toStringExpanded());
         AlertDialog dialog = builder.create();
         dialog.show();
     }
