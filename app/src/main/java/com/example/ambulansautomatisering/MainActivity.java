@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements LocationHelper.Lo
     // onLocationChanged gets run at startup
     @Override
     public void onLocationChanged(Location location) {
+        float speed = location.getSpeed(); // get speed
         // Handle the updated location here
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
