@@ -59,3 +59,6 @@ LocationHelper.java
 6. stopLocationUpdates Method:  
    -Stops location updates by removing the callback.  
 
+This code essentially sets up a location-aware Android app.
+It checks for location permissions, starts location updates when granted, and updates a TextView with the current location.
+The LocationHelper class abstracts away the details of location updates.
