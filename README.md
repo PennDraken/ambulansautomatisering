@@ -5,7 +5,11 @@ For course ENM156 at Chalmers.
 ## Overview
 
 The program is an Android Studio application that aims to automate the manual registration of different timestamps during an ambulance mission.  
-The program works by using GPS-data to estimate where different timestamps might occur. Currently some of the GPS-locations are hard coded, and would be need to synced with mission information in a functional prototype. The timestamp "arrival at patient address" should instead automatically use the address provided to the ambulance personell. The timestamp, "arrival at hospital" also uses a GPS-coordinate which mich not correspond to the correct address. One possible implementation might be to use a list of known hospitals and their corresponding GPS-coordinates instead.
+The program works by using GPS-data to estimate where different timestamps might occur. Currently some of the GPS-locations are hard coded, and would be need to synced with mission information in a functional prototype.  
+
+The timestamp "arrival at patient address" should instead automatically use the address provided to the ambulance personell. The timestamp, "arrival at hospital" also uses a GPS-coordinate which mich not correspond to the correct address. One possible implementation might be to use a list of known hospitals and their corresponding GPS-coordinates instead.  
+
+The timestamp "patient meeting" is not implemented in main, but in the branch "feature-still-detection".
 
 ## Overall structure
 
